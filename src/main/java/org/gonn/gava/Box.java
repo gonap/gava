@@ -1,157 +1,171 @@
+/*
+ * <https://gonn.org> [++]
+ * Copyright (c) 2023 Gon Yi. All rights reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ */
 package org.gonn.gava;
 
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 
 /**
  * Box an object just like the java.util.Optional
  *
- * @param <T>
+ * @param <T> Type of the content to be boxed
  * @author Gon Yi
- * @version 0.0.1
- * @link gonn.org
- * @created 2/8/2023
- * @see java.util.Optional
+ * @version 0.0.2
  */
 public class Box<T> {
     private T value;
 
+    /**
+     * Box object with T in it.
+     *
+     * @param t Boxed T.
+     */
     public Box(T t) {
         this.value = t;
     }
 
     /**
-     * Static constructor.
-     * <code>
-     * Box.of("1123").map(v->v.length()).get()
-     * </code>
+     * Static constructor:
      *
-     * @param obj
-     * @param <T>
-     * @return Box of type T.
+     * @param obj A target object to be boxed.
+     * @param <T> Type of the target object.
+     * @return Boxed target object.
      */
     public static <T> Box<T> of(T obj) {
         return new Box<>(obj);
     }
 
     /**
-     * If the box's underlying value is NULL.
+     * Check if the box content is NULL.
      *
-     * @return true if value is NULL.
+     * @return true if the content is NULL.
      */
     public boolean isEmpty() {
         return this.value == null;
     }
 
     /**
-     * If the box's underlying value is NOT NULL.
+     * Check if the box content is NOT NULL.
      *
-     * @return true if value is NOT NULL.
+     * @return true if the content is full.
      */
     public boolean isFull() {
         return this.value != null;
     }
 
     /**
-     * Get underlying value of the box. When the box is empty, this will return null.
+     * Get the box content.
+     * When the box is empty, this will return null.
      *
-     * @return
+     * @return Content of the box.
      */
     public T get() {
         return this.value;
     }
 
     /**
-     * Get underlying value of the box. However, if the box is empty, returns fallback of T.
+     * Get the box content.
+     * If it is null, return the fallback instead.
      *
-     * @param fallback
-     * @return content of T.
+     * @param fallback A value to be returned when the box is empty.
+     * @return Content of the box.
      */
     public T get(T fallback) {
         return this.value == null ? fallback : value;
     }
 
     /**
-     * Run consumer mod. Any modification should be done within the consumer.
-     * Box's value will not be changed. Use "update" method to change Box's value.
+     * View or modifying the box content.
+     * This is for a mutable content. Use thenSet() for immutable content.
      *
-     * @param valueConsumer
-     * @return
-     */
-    public Box<T> then(Consumer<T> valueConsumer) {
-        if (valueConsumer != null && this.value != null)
-            valueConsumer.accept(this.value);
-        return this;
-    }
-
-    /**
-     * Update will replace underlying T value.
-     * Box's value will be changed within same value type.
-     * Use "map" method in order to change to a different type.
-     *
-     * @param valueOperator
-     * @return
-     */
-    public Box<T> update(UnaryOperator<T> valueOperator) {
-        if (valueOperator != null && this.value != null)
-            this.value = valueOperator.apply(this.value);
-        return this;
-    }
-
-    /**
-     * If not exists, function mod's value will be set for the value.
-     * <code>
-     * Box.of(new StringBuilder()).with(sb->sb.append("Hello")).map(sb->sb.size()).get()
-     * </code>
-     *
-     * @param fallbackSupplier
+     * @param modFn A function that can view or modify the content.
      * @return self
      */
-    public Box<T> or(Supplier<T> fallbackSupplier) {
-        if (fallbackSupplier != null && this.value == null)
-            this.value = fallbackSupplier.get();
+    public Box<T> then(FnT<T> modFn) {
+        if (modFn != null && this.value != null)
+            modFn.run(this.value);
         return this;
     }
 
     /**
-     * If the Box is empty, throw an exception.
+     * Replace the box content.
+     * This is to replace the immutable content in a box.
+     * Content of the box will be replaced with the output of modFn.
+     * NOTE: This is between same content type. Use "map" method in order to change to a different type.
      *
-     * @param exceptionSupplier
-     * @param <X>
+     * @param modFn A function that takes and returns type T data.
      * @return self
-     * @throws X extends Throwable
      */
-    public <X extends Throwable> Box<T> orThrow(Supplier<? extends X> exceptionSupplier) throws X {
-        if (value == null) throw exceptionSupplier.get();
+    public Box<T> thenSet(FnTR<T, T> modFn) {
+        if (modFn != null && this.value != null)
+            this.value = modFn.run(this.value);
         return this;
     }
 
     /**
-     * Map current underlying value of T into value of Box of R.
+     * If the box is empty, returns the box with the fallback value
      *
-     * @param valueFunction modification function
-     * @param <R>           new type
+     * @param fallback A fallback T when the box is empty.
+     * @return Self
+     */
+    public Box<T> or(T fallback) {
+        if (this.value == null)
+            this.value = fallback;
+        return this;
+    }
+
+    /**
+     * If the box is empty, returns the box with the fallback value
+     *
+     * @param fallbackFn A function that returns fallback value T.
+     * @return Self
+     */
+    public Box<T> orElse(FnR<T> fallbackFn) {
+        if (this.value == null)
+            this.value = fallbackFn.run();
+        return this;
+    }
+
+    /**
+     * If the box is empty (content is null), throw an exception.
+     *
+     * @param exception Exception to be thrown when the box is empty.
+     * @param <E>       Any throwable object.
+     * @return Self
+     * @throws E Any Throwable exception
+     */
+    public <E extends Throwable> Box<T> orThrow(E exception) throws E {
+        if (value == null) throw exception;
+        return this;
+    }
+
+    /**
+     * Converts box content to a new content in a box.
+     *
+     * @param mapFn Lambda function which takes current content, and returns a Box with new type of content.
+     * @param <R>   New return type
      * @return new boxed R.
      */
-    public <R> Box<R> map(Function<T, R> valueFunction) {
-        return new Box<>(valueFunction.apply(this.value));
+    public <R> Box<R> map(FnTR<T, R> mapFn) {
+        return new Box<>(mapFn.run(this.value));
     }
 
     /**
-     * When valueFunction failed during map(), use output from fallbackSupplier()
+     * Converts box content to a new content in a box.
+     * If the mapFn fails, this will return a box with the fallback value.
      *
-     * @param valueFunction
-     * @param fallbackSupplier
-     * @param <R>              new type
+     * @param mapFn    Lambda function which takes current content, and returns a Box with new type of content.
+     * @param fallback Fallback value that will be boxed when mapFn throws an exception.
+     *                 Note that if mapFn returns null, this fallback won't be called.
+     * @param <R>      New return type
      * @return new boxed R
      */
-    public <R> Box<R> map(Function<T, R> valueFunction, Supplier<R> fallbackSupplier) {
+    public <R> Box<R> map(FnTR<T, R> mapFn, R fallback) {
         try {
-            return this.map(valueFunction);
+            return this.map(mapFn);
         } catch (Exception ignore) {
-            return new Box<>(fallbackSupplier.get());
+            return new Box<>(fallback);
         }
     }
 

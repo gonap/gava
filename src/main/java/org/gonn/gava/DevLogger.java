@@ -1,8 +1,9 @@
+/*
+ * <https://gonn.org> [++]
+ * Copyright (c) 2023 Gon Yi. All rights reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ */
 package org.gonn.gava;
-
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
-
 
 /**
  * DevLogger is a temporary simplest logger to be used during early stage of development.
@@ -12,7 +13,6 @@ import java.util.function.Supplier;
  *
  * @author Gon Yi
  * @version 1.3.0
- * @link https://gonn.org
  */
 public class DevLogger implements Loggable<String> {
     public static final byte LV_ALL = 0;
@@ -29,7 +29,7 @@ public class DevLogger implements Loggable<String> {
     public static final String ENV_LOG_FILELINE = "LOG_FILELINE";
     private static final String ME = DevLogger.class.getSimpleName();  // this is a class name in string.
     private final String name;
-    private BiConsumer<Byte, String> writer;
+    private FnTT<Byte, String> writer;
 
     // Default value
     private byte level = LV_OFF;
@@ -82,12 +82,15 @@ public class DevLogger implements Loggable<String> {
     /**
      * Logger name to have optional identifier such as filename.
      * <code>Logger(SomeProcess.class, "abc.txt");</code>
+     *
+     * @param c          any class
+     * @param identifier if there's additional information about the logger
      */
     public DevLogger(Class<?> c, String identifier) {
         this(c.getSimpleName() + ":" + identifier);
     }
 
-    private static String formatter(String name, String level, Supplier<String> msg, boolean useTimestamp, boolean useFileLine, int skip) {
+    private static String formatter(String name, String level, FnR<String> msg, boolean useTimestamp, boolean useFileLine, int skip) {
         StringBuilder sb = new StringBuilder(200);
         // Add timestamp
         if (useTimestamp) {
@@ -96,7 +99,7 @@ public class DevLogger implements Loggable<String> {
         // Add level, name, and message
         sb.append(level)
                 .append("  [").append(name).append("]  ")
-                .append(msg != null ? msg.get() : "null");
+                .append(msg != null ? msg.run() : "null");
         // Add fileline
         if (useFileLine) {
             StackTraceElement caller = Common.getCaller(2 + skip);
@@ -138,9 +141,9 @@ public class DevLogger implements Loggable<String> {
      * Set output writer function
      *
      * @param writer consumer function takes a string.
-     * @return
+     * @return self
      */
-    public DevLogger setOutput(BiConsumer<Byte, String> writer) {
+    public DevLogger setOutput(FnTT<Byte, String> writer) {
         this.writer = writer;
         return this.enable(true);
     }
@@ -162,7 +165,7 @@ public class DevLogger implements Loggable<String> {
      *
      * @param timestamp from the starting of (DevLogger) code. (true/false)
      * @param fileline  filename and line number. (true/false)
-     * @return
+     * @return self
      */
     public DevLogger setFormat(boolean timestamp, boolean fileline) {
         this.useTimestamp = timestamp;
@@ -196,65 +199,65 @@ public class DevLogger implements Loggable<String> {
 
 
     @Override
-    public void trace(Supplier<String> msg) {
+    public void trace(FnR<String> msg) {
         if (this.enabled && this.level <= DevLogger.LV_TRACE)
-            this.writer.accept(DevLogger.LV_TRACE,
+            this.writer.run(DevLogger.LV_TRACE,
                     DevLogger.formatter(this.name, "TRACE", msg, this.useTimestamp, this.useFileLine, 0));
     }
 
     @Override
-    public void debug(Supplier<String> msg) {
+    public void debug(FnR<String> msg) {
         if (this.enabled && this.level <= DevLogger.LV_DEBUG)
-            this.writer.accept(DevLogger.LV_DEBUG,
+            this.writer.run(DevLogger.LV_DEBUG,
                     DevLogger.formatter(this.name, "DEBUG", msg, this.useTimestamp, this.useFileLine, 0));
     }
 
     @Override
-    public void info(Supplier<String> msg) {
+    public void info(FnR<String> msg) {
         if (this.enabled && this.level <= DevLogger.LV_INFO)
-            this.writer.accept(DevLogger.LV_INFO,
+            this.writer.run(DevLogger.LV_INFO,
                     DevLogger.formatter(this.name, "INFO ", msg, this.useTimestamp, this.useFileLine, 0));
     }
 
     @Override
-    public void warn(Supplier<String> msg) {
+    public void warn(FnR<String> msg) {
         if (this.enabled && this.level <= DevLogger.LV_WARN)
-            this.writer.accept(DevLogger.LV_WARN,
+            this.writer.run(DevLogger.LV_WARN,
                     DevLogger.formatter(this.name, "WARN ", msg, this.useTimestamp, this.useFileLine, 0));
     }
 
     @Override
-    public void warn(Supplier<String> msg, int skip) {
-        if (this.enabled && this.level <= DevLogger.LV_WARN)
-            this.writer.accept(DevLogger.LV_WARN,
-                    DevLogger.formatter(this.name, "WARN ", msg, this.useTimestamp, this.useFileLine, skip));
-    }
-
-    @Override
-    public void error(Supplier<String> msg) {
+    public void error(FnR<String> msg) {
         if (this.enabled && this.level <= LV_ERROR)
-            this.writer.accept(LV_ERROR,
+            this.writer.run(LV_ERROR,
                     DevLogger.formatter(this.name, "ERROR", msg, this.useTimestamp, this.useFileLine, 0));
     }
 
     @Override
-    public void error(Supplier<String> msg, int skip) {
-        if (this.enabled && this.level <= DevLogger.LV_ERROR)
-            this.writer.accept(DevLogger.LV_ERROR,
-                    DevLogger.formatter(this.name, "ERROR", msg, this.useTimestamp, this.useFileLine, skip));
-    }
-
-    @Override
-    public void fatal(Supplier<String> msg) {
+    public void fatal(FnR<String> msg) {
         if (this.enabled && this.level <= DevLogger.LV_FATAL)
-            this.writer.accept(DevLogger.LV_FATAL,
+            this.writer.run(DevLogger.LV_FATAL,
                     DevLogger.formatter(this.name, "FATAL", msg, this.useTimestamp, this.useFileLine, 0));
     }
 
     @Override
-    public void fatal(Supplier<String> msg, int skip) {
+    public void warn(FnR<String> msg, int skip) {
+        if (this.enabled && this.level <= DevLogger.LV_WARN)
+            this.writer.run(DevLogger.LV_WARN,
+                    DevLogger.formatter(this.name, "WARN ", msg, this.useTimestamp, this.useFileLine, skip));
+    }
+
+    @Override
+    public void error(FnR<String> msg, int skip) {
+        if (this.enabled && this.level <= DevLogger.LV_ERROR)
+            this.writer.run(DevLogger.LV_ERROR,
+                    DevLogger.formatter(this.name, "ERROR", msg, this.useTimestamp, this.useFileLine, skip));
+    }
+
+    @Override
+    public void fatal(FnR<String> msg, int skip) {
         if (this.enabled && this.level <= DevLogger.LV_FATAL)
-            this.writer.accept(DevLogger.LV_FATAL,
+            this.writer.run(DevLogger.LV_FATAL,
                     DevLogger.formatter(this.name, "FATAL", msg, this.useTimestamp, this.useFileLine, skip));
     }
 

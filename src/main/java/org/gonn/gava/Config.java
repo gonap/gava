@@ -1,19 +1,23 @@
+/*
+ * <https://gonn.org> [++]
+ * Copyright (c) 2023 Gon Yi. All rights reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ */
 package org.gonn.gava;
 
 import java.io.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
+
 
 /**
  * Storing Configuration Property File
  *
  * @author Gon Yi
  * @version 0.0.2
- * @link https://gonn.org
  */
-public class ConfigStore implements Storable<String, String>, AutoCloseable {
+public class Config implements Storable<String, String>, AutoCloseable {
     private static DevLogger log;
 
     private static String COMMENT = "#";
@@ -23,14 +27,14 @@ public class ConfigStore implements Storable<String, String>, AutoCloseable {
     private File f = null;
     private Map<String, String> conf = new LinkedHashMap<>();
 
-    public ConfigStore(String filename) throws IOException {
+    public Config(String filename) throws IOException {
         this(filename, null);
     }
 
-    public ConfigStore(String filename, BiFunction<String, String, Boolean> lineFilter) throws IOException {
+    public Config(String filename, FnTTR<String, String, Boolean> lineFilter) throws IOException {
         this.f = new File(filename);
         // this.log = new Logger(StoreConfig.class, filename).testing();
-        this.log = new DevLogger(ConfigStore.class, filename);
+        this.log = new DevLogger(Config.class, filename);
 
         if (!this.f.exists() && this.f.createNewFile()) this.log.info(() -> "Created a new file <" + filename);
 
@@ -39,11 +43,11 @@ public class ConfigStore implements Storable<String, String>, AutoCloseable {
             int lineNumber = 0;
             for (; line != null; line = br.readLine()) {
                 lineNumber++;
-                if (line.startsWith(ConfigStore.COMMENT)) {
+                if (line.startsWith(Config.COMMENT)) {
                     this.conf.put(line, null);
                     continue;
                 }
-                final int p = line.indexOf(ConfigStore.SEPARATOR);
+                final int p = line.indexOf(Config.SEPARATOR);
                 final int tmpLineNumber = lineNumber;
                 if (p > -1) {
                     String key = line.substring(0, p).trim();
@@ -54,7 +58,7 @@ public class ConfigStore implements Storable<String, String>, AutoCloseable {
                         val = val.substring(1, val.length() - 1);
                     }
                     if (lineFilter != null) {
-                        if (lineFilter.apply(key, val)) {
+                        if (lineFilter.run(key, val)) {
                             // add
                             this.conf.put(key, val);
                         } else {
@@ -82,7 +86,7 @@ public class ConfigStore implements Storable<String, String>, AutoCloseable {
                 try {
                     bw.append(k);
                     if (v != null) {
-                        bw.append(ConfigStore.SEPARATOR_OUT);
+                        bw.append(Config.SEPARATOR_OUT);
                         if (v.indexOf(' ') > -1) {
                             bw.append('"').append(v).append('"');
                         } else {

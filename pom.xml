@@ -6,7 +6,7 @@
 
     <groupId>org.gonn</groupId>
     <artifactId>gava</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Macro-like frequently used functions/classes</description>
     <url>https://github.com/gonap/gava</url>
@@ -54,6 +54,7 @@
 
     <build>
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
@@ -82,14 +83,13 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.4.1</version>
-
                 <configuration>
                     <source>8</source>
-                    <doclint>none</doclint>
                 </configuration>
                 <executions>
                     <execution>
@@ -136,6 +136,7 @@
                     </archive>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 </project>

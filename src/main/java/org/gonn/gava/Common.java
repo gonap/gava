@@ -1,15 +1,16 @@
+/*
+ * <https://gonn.org> [++]
+ * Copyright (c) 2023 Gon Yi. All rights reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ */
 package org.gonn.gava;
 
 
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
-
 /**
- * Basic static functions
+ * A collection of static methods that are very frequently used.
  *
  * @author Gon Yi
- * @version 1.3.3
- * @link https://gonn.org
+ * @version 1.3.4
  */
 public class Common {
     /**
@@ -17,16 +18,12 @@ public class Common {
      * EPOCH_STARTED -- record the time first library was used
      * VERBOSE_MODE  -- whether to log
      */
-    public static final String ENV_VAR_VERBOSE = "VERBOSE";
+    public static final String ENV_VAR_VERBOSE = "GAVA_VERBOSE";  // to avoid conflict with other program
     public static final long EPOCH_STARTED = System.currentTimeMillis();
     public static final boolean VERBOSE_MODE = getConfig(ENV_VAR_VERBOSE, false);
+
     // Various time in milliseconds
     public static final int SECOND = 1000;
-
-
-    // ======================================================================
-    // STRING
-    // ======================================================================
     public static final int MINUTE = SECOND * 60;
     public static final int HOUR = MINUTE * 60;
     public static final int DAY = HOUR * 24;
@@ -36,7 +33,7 @@ public class Common {
     }
 
     /**
-     * Take a char c and repeat it n times, store it as a String.
+     * Take a char c and repeat it n times.
      *
      * @param c char to repeat
      * @param n number of repeats
@@ -53,6 +50,13 @@ public class Common {
         return new String(out);
     }
 
+    /**
+     * Repeat the input string for n times.
+     *
+     * @param s A string to be repeated
+     * @param n Number of repeats
+     * @return Repeated string s
+     */
     public static String repeat(String s, int n) {
         if (s == null || n < 1) {
             return "";
@@ -68,31 +72,38 @@ public class Common {
     /**
      * Count char c from String s, returns int of how many times char c was used.
      *
-     * @param s String s to be checked for char c
-     * @param c char c to lookup
+     * @param haystack String s to be checked for char c
+     * @param needle   char c to lookup
      * @return number of char c found in String s
      */
-    public static int count(String s, char c) {
-        if (s == null) {
+    public static int count(String haystack, char needle) {
+        if (haystack == null) {
             return 0;
         }
         int out = 0;
-        for (int i = 0; i < s.length(); ++i) {
-            if (s.charAt(i) == c) {
+        for (int i = 0; i < haystack.length(); ++i) {
+            if (haystack.charAt(i) == needle) {
                 out++;
             }
         }
         return out;
     }
 
-    public static int count(String s, String search) {
-        if (s == null || s.length() == 0 || search == null || search.length() == 0
-                || search.length() > s.length()) {
+    /**
+     * Count how many times the needle is in haystack.
+     *
+     * @param haystack A string to be evaluated.
+     * @param needle   A string to be found.
+     * @return Number of times the string "search" was in s.
+     */
+    public static int count(String haystack, String needle) {
+        if (haystack == null || haystack.length() == 0 || needle == null || needle.length() == 0
+                || needle.length() > haystack.length()) {
             return 0;
         }
         int out = 0;
         int cur = 0;
-        while ((cur = s.indexOf(search, cur)) >= 0) {
+        while ((cur = haystack.indexOf(needle, cur)) > -1) {
             out++;
             cur++;
         }
@@ -116,6 +127,12 @@ public class Common {
         return out;
     }
 
+    /**
+     * Right trim the string
+     *
+     * @param s Input string
+     * @return Trimmed string
+     */
     public static String rtrim(String s) {
         if (s == null) {
             return null;
@@ -128,6 +145,12 @@ public class Common {
         return "";
     }
 
+    /**
+     * Left trim the string
+     *
+     * @param s Input string
+     * @return Trimmed string
+     */
     public static String ltrim(String s) {
         if (s == null) {
             return null;
@@ -154,15 +177,16 @@ public class Common {
 
     /**
      * A static alternative substring method. This method supports negative index.
-     * <code>
+     * <p><code>
      * String s = "hello Gon";
      * substring(s, -3, 0);   // returns Gon
      * substring(s, -3, -1);  // returns Go
-     * </code>
+     * </code></p>
      *
-     * @param s
+     * @param s       input string
      * @param idxFrom index of substring from
      * @param idxTo   index of substring to; when its value is 0, it means until end of the string.
+     * @return String value
      */
     public static String substring(String s, int idxFrom, int idxTo) {
         if (s == null) {
@@ -174,57 +198,61 @@ public class Common {
         return p1 >= p2 ? "" : s.substring(p1, p2);
     }
 
-    public static String substring(String s, int to) {
-        if (to == 0) {
-            return "";
-        }
-        if (to > 0) {
-            return substring(s, 0, to);
-        }
-        return substring(s, to, 0);
+    /**
+     * Return the string until index idx.
+     *
+     * @param s   Input string
+     * @param idx Index of the string. This can be negative number as well.
+     * @return Subset of string
+     */
+    public static String substring(String s, int idx) {
+        if (idx == 0) return "";
+        if (idx > 0) return substring(s, 0, idx);
+        return substring(s, idx, 0);
     }
 
     /**
      * Get a String between String prefix and String suffix from String s.
-     * <code>
+     * <p><code>
      * String s = "https://gonn.org/test";
      * getStringBetween(s, "https://", "/test");  // returns gonn.org
-     * </code>
+     * </code></p>
      *
-     * @param s      String from
-     * @param prefix prefix to search
-     * @param suffix suffix to search
+     * @param s      Input string
+     * @param prefix A prefix to search
+     * @param suffix A suffix to search
+     * @return String value within prefix and suffix. If not matched, returns null.
      */
-    public static String getStringBetween(String s, String prefix, String suffix) {
-        if (s == null || prefix == null || suffix == null
-                || !s.startsWith(prefix) || !s.endsWith(suffix)) {
-            return null;
-        }
+    public static String getBetween(String s, String prefix, String suffix) {
+        if (!isBetween(s, prefix, suffix)) return null;
+        return s.substring(prefix.length(), s.length() - suffix.length());
+    }
 
-        int sLen = s.length();
-        int start = prefix.length();
-        int end = suffix.length();
-
-        if (start == 0 && end == 0) {
-            return s;
-        }
-        if (sLen < start + end) {
-            return null;
-        }
-
-        return s.substring(start, sLen - end);
+    /**
+     * Check if the input has the prefix AND the suffix.
+     *
+     * @param s      Input string
+     * @param prefix A prefix string
+     * @param suffix A suffix string
+     * @return true if the input has the prefix and suffix.
+     */
+    public static boolean isBetween(String s, String prefix, String suffix) {
+        if (s.length() < prefix.length() + suffix.length()) return false;
+        return s.startsWith(prefix) && s.endsWith(suffix);
     }
 
     /**
      * Returns index element from the String s when separated by char delim.
+     *
      * <code>
      * String s = "Gon|Yi|41|Conway|AR|72034";
-     * getNth(s, '|', 3) // returns Conway
+     * getNth(s, '|', 3); // returns Conway
      * </code>
      *
-     * @param s     input String s
-     * @param delim delimiter char to separate
-     * @param index an index to search from the separated String s.
+     * @param s     An input string
+     * @param delim A delimiter char to separate
+     * @param index An index to search from the separated input.
+     * @return Returns the Nth String
      */
     public static String getNth(String s, char delim, int index) {
         if (s == null) {
@@ -263,10 +291,13 @@ public class Common {
         return (s == null || s.length() == 0) ? 0 : s.charAt(s.length() - 1);
     }
 
-    // ======================================================================
-    // TIME / EPOCH
-    // ======================================================================
-
+    /**
+     * Remove prefix from the String s
+     *
+     * @param s      Input string
+     * @param prefix A prefix string to remove
+     * @return A string without the suffix
+     */
     public static String removePrefix(String s, String prefix) {
         if (s == null) {
             return null;
@@ -277,6 +308,13 @@ public class Common {
         return s.startsWith(prefix) ? s.substring(prefix.length()) : s;
     }
 
+    /**
+     * Remove prefix from the String s
+     *
+     * @param s      Input string
+     * @param prefix A prefix char to remove
+     * @return A string without the suffix
+     */
     public static String removePrefix(String s, char prefix) {
         if (s == null) {
             return null;
@@ -284,6 +322,13 @@ public class Common {
         return first(s) == prefix ? s.substring(1) : s;
     }
 
+    /**
+     * Remove the suffix from the String s
+     *
+     * @param s      Input string
+     * @param suffix A suffix string to remove
+     * @return A string without the suffix
+     */
     public static String removeSuffix(String s, String suffix) {
         if (s == null) {
             return null;
@@ -294,6 +339,13 @@ public class Common {
         return s.endsWith(suffix) ? s.substring(0, s.length() - suffix.length()) : s;
     }
 
+    /**
+     * Remove the suffix from the String s
+     *
+     * @param s      Input string
+     * @param suffix A suffix char to remove
+     * @return A string without the suffix
+     */
     public static String removeSuffix(String s, char suffix) {
         if (s == null) {
             return null;
@@ -314,7 +366,7 @@ public class Common {
      * Converts epoch milliseconds to human-readable time format.
      * Note: Date is not considered here, and returns only time part (hour, minute, second, and millisecond)
      *
-     * @param epoch    Epoch milliseconds
+     * @param epoch    Epoch at milliseconds level
      * @param offsetHr Any offset in hour. (i.g. -6 for CST) If 0 is given, this will return UTC.
      * @param signed   Whether to show +/- sign.
      * @return Human-readable epoch time. i.g. "15:04:05.000"
@@ -360,6 +412,10 @@ public class Common {
 
     /**
      * Return epoch time with offset.
+     *
+     * @param epoch    epoch time
+     * @param offsetHr UTC offset in hour (e.g. -6 for CST)
+     * @return String value
      */
     public static String epochToString(final long epoch, int offsetHr) {
         return epochToString(epoch, offsetHr, false);
@@ -438,8 +494,8 @@ public class Common {
      * Get an integer and calculate number of digits.
      * Note that this uses long type even when int or short type is given.
      *
-     * @param n number to evaluate
-     * @return number of digits in int
+     * @param n A number to evaluate
+     * @return Number of digits in n.
      */
     public static int getDigits(long n) {
         int out = n < 0 ? 2 : 1;
@@ -448,6 +504,10 @@ public class Common {
             out++;
         }
         return out;
+    }
+
+    public static int getDigits(int n) {
+        return getDigits((long) n);
     }
 
 
@@ -460,12 +520,12 @@ public class Common {
      * If the size is negative, it will have "-" (minus sign).
      * This is the simplest and only handles from B to GB. (e.g. 1TB will be 1024GB)
      *
-     * @param numOfBytes of a file or memory in byte (B).
-     * @return size with the unit such as "12.00KB" with two decimals.
+     * @param sizeInByte Size of a file or memory in bytes (B).
+     * @return Size in string with the unit such as "12.00KB" with two decimals points.
      */
-    public static String getByteSizeString(long numOfBytes) {
-        final String sign = numOfBytes > 0 ? "" : "-";
-        final long size = numOfBytes > 0 ? numOfBytes : -numOfBytes;
+    public static String byteSizeToString(long sizeInByte) {
+        final String sign = sizeInByte > 0 ? "" : "-";
+        final long size = sizeInByte > 0 ? sizeInByte : -sizeInByte;
 
         // BYTES
         if (size < 1024) {
@@ -505,7 +565,7 @@ public class Common {
      *
      * @param key      property/variable name
      * @param fallback default fallback value
-     * @return
+     * @return boolean value
      */
     public static boolean getConfig(String key, boolean fallback) {
         String res = getConfig(key);
@@ -537,14 +597,14 @@ public class Common {
      * @param f    BiConsumer function, when single param such as `--disable` is given, 2nd argument for the BiConsumer
      *             will be null.
      */
-    public static void parseArgs(String[] args, BiConsumer<String, String> f) {
+    public static void parseArgs(String[] args, FnTT<String, String> f) {
         for (String a : args) {
             if (a.startsWith("--")) {
                 int idx = a.indexOf('=');
                 if (idx >= 0) { // beginning index 2 because of the prefix "--"
-                    f.accept(a.substring(2, idx), a.substring(idx + 1));
+                    f.run(a.substring(2, idx), a.substring(idx + 1));
                 } else {
-                    f.accept(a.substring(2), null);
+                    f.run(a.substring(2), null);
                 }
             }
         }
@@ -569,6 +629,8 @@ public class Common {
 
     /**
      * Returns caller information in "filename:lineNumber" format. (e.g. "Gava.java:123")
+     *
+     * @return String value file-line
      */
     public static String getCaller() {
         StackTraceElement tmp = getCaller(1);
@@ -598,6 +660,7 @@ public class Common {
      * Note that this method does not throw any exception, but will log if verbose mode.
      *
      * @param ms milliseconds
+     * @return true if okay, otherwise false.
      */
     public static boolean sleep(long ms) {
         try {
@@ -635,20 +698,20 @@ public class Common {
         );
     }
 
-    public static void debug(Supplier<String> s) {
-        if (VERBOSE_MODE) log(" DEBUG  ", s.get());
+    public static void debug(FnR<String> s) {
+        if (VERBOSE_MODE) log(" DEBUG  ", s.run());
     }
 
-    public static void info(Supplier<String> s) {
-        if (VERBOSE_MODE) log(" INFO  ", s.get());
+    public static void info(FnR<String> s) {
+        if (VERBOSE_MODE) log(" INFO  ", s.run());
     }
 
-    public static void warn(Supplier<String> s) {
-        if (VERBOSE_MODE) log(" WARN  ", s.get());
+    public static void warn(FnR<String> s) {
+        if (VERBOSE_MODE) log(" WARN  ", s.run());
     }
 
-    public static void error(Supplier<String> s) {
-        if (VERBOSE_MODE) log(" ERROR  ", s.get());
+    public static void error(FnR<String> s) {
+        if (VERBOSE_MODE) log(" ERROR  ", s.run());
     }
 
 
@@ -657,24 +720,36 @@ public class Common {
     // ======================================================================
 
     /**
-     * Evaluates the given function and return the result.
-     * This is to reduce code.
-     * <code>
-     * boolean xb = Gava.get(()->true);
-     * String xs  = Gava.get(()->"blah");
-     * int xi     = Gava.get(()->123);
-     * </code>
+     * Evaluate the function without a param
+     * (This is just to reduce code.)
      *
-     * @param f   supplier function that takes type T.
-     * @param <T> any
-     * @return result of function f.
+     * @param evalFn A lambda function returns R
+     * @param <R>    Output type
+     * @return Result from evalFn
      */
-    public static <T> T get(Supplier<T> f) {
-        return f.get();
+    public static <R> R eval(FnR<R> evalFn) {
+        return evalFn.run();
     }
 
     /**
-     * Get hash from string
+     * Evaluate the function with a param.
+     * (This is just to reduce code.)
+     *
+     * @param t      An input value to be evaluated
+     * @param evalFn A lambda function takes T and returns R.
+     * @param <T>    Input type
+     * @param <R>    Output type
+     * @return Result from evalFn
+     */
+    public static <T, R> R eval(T t, FnTR<T, R> evalFn) {
+        return evalFn.run(t);
+    }
+
+    /**
+     * Get hash from the input string
+     *
+     * @param s Input string
+     * @return Hashed integer
      */
     public static int getHash(String s) {
         if (s == null) return 0;
@@ -691,7 +766,7 @@ public class Common {
     // MAIN for testing
     // ======================================================================
     public static void main(String[] args) {
-        System.out.println(Common.class.getPackage().getName() + " by Gonn");
+        System.out.println(Common.class.getPackage().getName() + " by Gonn <https://gonn.org>");
     }
 }
 

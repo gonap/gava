@@ -17,7 +17,7 @@ package org.gonn.gava;
  * @author Gon Yi
  * @version 1.0.1
  */
-public interface Storable<T, U> {
+public interface Storable<T, R> {
     /**
      * Get a record for the key.
      *
@@ -26,7 +26,7 @@ public interface Storable<T, U> {
      * @return record IF exists OTHERWISE returns null.
      * @throws E any exception
      */
-    <E extends Exception> U get(T key) throws E;
+    <E extends Throwable> R get(T key) throws E;
 
     /**
      * Add a record with the key. IF the key already exists, overwrite the record.
@@ -36,7 +36,7 @@ public interface Storable<T, U> {
      * @param rec to save.
      * @throws E any exception
      */
-    <E extends Exception> void set(T key, U rec) throws E;
+    <E extends Throwable> void set(T key, R rec) throws E;
 
     /**
      * Delete a record
@@ -46,5 +46,13 @@ public interface Storable<T, U> {
      * @return true if a record exists and deleted, otherwise false.
      * @throws E any exception
      */
-    <E extends Exception> boolean delete(T key) throws E;
+    <E extends Throwable> boolean delete(T key) throws E;
+    
+    /**
+     * Close the storable
+     *
+     * @param <E> any exception
+     * @throws E any exception
+     */    
+    <E extends Throwable> close() throws E;
 }

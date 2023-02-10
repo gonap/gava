@@ -240,21 +240,18 @@ public class DevLogger implements Loggable<String> {
                     DevLogger.formatter(this.name, "FATAL", msg, this.useTimestamp, this.useFileLine, 0));
     }
 
-    @Override
     public void warn(FnR<String> msg, int skip) {
         if (this.enabled && this.level <= DevLogger.LV_WARN)
             this.writer.run(DevLogger.LV_WARN,
                     DevLogger.formatter(this.name, "WARN ", msg, this.useTimestamp, this.useFileLine, skip));
     }
 
-    @Override
     public void error(FnR<String> msg, int skip) {
         if (this.enabled && this.level <= DevLogger.LV_ERROR)
             this.writer.run(DevLogger.LV_ERROR,
                     DevLogger.formatter(this.name, "ERROR", msg, this.useTimestamp, this.useFileLine, skip));
     }
 
-    @Override
     public void fatal(FnR<String> msg, int skip) {
         if (this.enabled && this.level <= DevLogger.LV_FATAL)
             this.writer.run(DevLogger.LV_FATAL,

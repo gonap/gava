@@ -122,7 +122,7 @@ public class Config implements Storable<String, String>, AutoCloseable {
 
     @Override
     public void close() throws IOException {
-        this.save();
+        conf.clear();
     }
 
     // public static void main(String[] args) throws Exception {

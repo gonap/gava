@@ -54,5 +54,5 @@ public interface Storable<T, R> {
      * @param <E> any exception
      * @throws E any exception
      */    
-    <E extends Throwable> close() throws E;
+    <E extends Throwable> void close() throws E;
 }

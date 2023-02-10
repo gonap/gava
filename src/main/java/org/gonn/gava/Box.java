@@ -82,7 +82,7 @@ public class Box<T> {
      * @return Self
      */
     public Box<T> skip(FnTRb<T> skipFn) {
-        if (skipFn.run(this.value)) this.value = null;
+        if (this.value != null && skipFn.run(this.value)) this.value = null;
         return this;
     }
 

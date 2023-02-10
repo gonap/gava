@@ -11,7 +11,7 @@ package org.gonn.gava;
  *
  * @param <T> Type of the content to be boxed
  * @author Gon Yi
- * @version 0.0.2
+ * @version 0.0.4
  */
 public class Box<T> {
     private T value;
@@ -76,6 +76,17 @@ public class Box<T> {
     }
 
     /**
+     * If the condition function returns true, empty the box.
+     *
+     * @param skipFn A lambda function returning true means empty the box.
+     * @return Self
+     */
+    public Box<T> skip(FnTRb<T> skipFn) {
+        if (skipFn.run(this.value)) this.value = null;
+        return this;
+    }
+
+    /**
      * View or modifying the box content.
      * This is for a mutable content. Use thenSet() for immutable content.
      *
@@ -104,39 +115,47 @@ public class Box<T> {
     }
 
     /**
-     * If the box is empty, returns the box with the fallback value
+     * If the box is empty, execute the Runnable.
      *
-     * @param fallback A fallback T when the box is empty.
+     * @param r A runnable to be executed. Since the box is empty, it won't do anything to the box.
+     *          To modify the box, use orSet instead.
      * @return Self
      */
-    public Box<T> or(T fallback) {
-        if (this.value == null)
-            this.value = fallback;
+    public Box<T> or(Runnable r) {
+        if (this.value == null) r.run();
         return this;
     }
 
     /**
-     * If the box is empty, returns the box with the fallback value
+     * If the box is empty, returns the box with a new value
      *
-     * @param fallbackFn A function that returns fallback value T.
+     * @param valueFn A function that returns new value for the box.
      * @return Self
      */
-    public Box<T> orElse(FnR<T> fallbackFn) {
-        if (this.value == null)
-            this.value = fallbackFn.run();
+    public Box<T> orSet(FnR<T> valueFn) {
+        if (this.value == null) this.value = valueFn.run();
         return this;
     }
 
     /**
-     * If the box is empty (content is null), throw an exception.
+     * Evaluate the value regardless of whether the box is empty or not.
      *
-     * @param exception Exception to be thrown when the box is empty.
-     * @param <E>       Any throwable object.
+     * @param evalFn A lambda function to evaluate the value. This does not return anything.
      * @return Self
-     * @throws E Any Throwable exception
      */
-    public <E extends Throwable> Box<T> orThrow(E exception) throws E {
-        if (value == null) throw exception;
+    public Box<T> eval(FnT<T> evalFn) {
+        evalFn.run(this.value);
+        return this;
+    }
+
+    /**
+     * Regardless of the box's state (whether full or not), set the content of the box.
+     *
+     * @param setFn A function returning new value
+     * @return A box with new value.
+     */
+    public Box<T> set(FnR<T> setFn) {
+        this.value = setFn.run();
         return this;
     }
 
@@ -148,35 +167,15 @@ public class Box<T> {
      * @return new boxed R.
      */
     public <R> Box<R> map(FnTR<T, R> mapFn) {
-        return new Box<>(mapFn.run(this.value));
-    }
-
-    /**
-     * Converts box content to a new content in a box.
-     * If the mapFn fails, this will return a box with the fallback value.
-     *
-     * @param mapFn    Lambda function which takes current content, and returns a Box with new type of content.
-     * @param fallback Fallback value that will be boxed when mapFn throws an exception.
-     *                 Note that if mapFn returns null, this fallback won't be called.
-     * @param <R>      New return type
-     * @return new boxed R
-     */
-    public <R> Box<R> map(FnTR<T, R> mapFn, R fallback) {
-        try {
-            return this.map(mapFn);
-        } catch (Exception ignore) {
-            return new Box<>(fallback);
-        }
+        if (this.value != null)
+            return new Box<>(mapFn.run(this.value));
+        return new Box<>(null);
     }
 
     @Override
-    public int hashCode() {
-        return this.value != null ? this.value.hashCode() : 0;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj != null && this.hashCode() == obj.hashCode();
+    public String toString() {
+        return value != null ? String.format("Box[%s]", value) : "Box[]";
     }
 }
+
 

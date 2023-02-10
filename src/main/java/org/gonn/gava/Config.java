@@ -33,7 +33,6 @@ public class Config implements Storable<String, String>, AutoCloseable {
 
     public Config(String filename, FnTTR<String, String, Boolean> lineFilter) throws IOException {
         this.f = new File(filename);
-        // this.log = new Logger(StoreConfig.class, filename).testing();
         this.log = new DevLogger(Config.class, filename);
 
         if (!this.f.exists() && this.f.createNewFile()) this.log.info(() -> "Created a new file <" + filename);
@@ -124,23 +123,5 @@ public class Config implements Storable<String, String>, AutoCloseable {
     public void close() throws IOException {
         conf.clear();
     }
-
-    // public static void main(String[] args) throws Exception {
-    //
-    //     try (ConfigStore conf = new ConfigStore("_testConfig.prop", (k,v)->v.length()!=1)) {
-    //         conf.set("name", "John");
-    //         conf.set("updated", Gava.getEpochString(System.currentTimeMillis(), -6));
-    //         // conf.set("coffee", "black");
-    //         System.out.println("delete(coffee): " + conf.delete("coffee"));
-    //
-    //         conf.forEach((k, v) -> {
-    //             if (v==null) {
-    //                 System.out.printf("SKIP <%s>%s", k, System.lineSeparator());
-    //             } else {
-    //                 System.out.printf("     [%-10s] %s%s", k, v, System.lineSeparator());
-    //             }
-    //         });
-    //     }
-    // }
 }
 

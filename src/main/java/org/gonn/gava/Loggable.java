@@ -10,7 +10,7 @@ package org.gonn.gava;
  *
  * @param <T> Any value that supplier will return
  * @author Gon Yi
- * @version 1.0.1
+ * @version 1.0.2
  * @see <a href="https://gonn.org">gonn.org</a>
  */
 public interface Loggable<T> {

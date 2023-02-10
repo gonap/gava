@@ -12,7 +12,7 @@ package org.gonn.gava;
  * NOTE: setting output is available only at global level.
  *
  * @author Gon Yi
- * @version 1.3.0
+ * @version 1.3.1
  */
 public class DevLogger implements Loggable<String> {
     public static final byte LV_ALL = 0;

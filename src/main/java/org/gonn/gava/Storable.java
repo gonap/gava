@@ -15,7 +15,7 @@ package org.gonn.gava;
  * @param <T> data type for Key
  * @param <R> data type for Record (value)
  * @author Gon Yi
- * @version 1.0.1
+ * @version 1.0.2
  */
 public interface Storable<T, R> {
     /**

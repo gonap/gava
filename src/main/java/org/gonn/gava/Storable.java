@@ -13,7 +13,7 @@ package org.gonn.gava;
  * </code>
  *
  * @param <T> data type for Key
- * @param <U> data type for Record (value)
+ * @param <R> data type for Record (value)
  * @author Gon Yi
  * @version 1.0.1
  */

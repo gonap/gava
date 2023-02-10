@@ -13,3 +13,8 @@ Gava is a collection of simple but frequently used code.
 - `gava.Storable`: minimalistic key/value based storage interface
 - `gava.Fn*`:      frequently used functional interfaces. (`T` represents input, `R` represents output)
 
+## Changes
+
+- v0.0.3c
+  - `Storable`: Simplify to use minimum
+    - Deleted `close()` and `update()` from the interface

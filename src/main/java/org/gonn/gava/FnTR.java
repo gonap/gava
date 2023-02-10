@@ -16,5 +16,5 @@ package org.gonn.gava;
  */
 @FunctionalInterface
 public interface FnTR<T, R> {
-    R run(T t1);
+    R run(T t);
 }

@@ -11,7 +11,7 @@ package org.gonn.gava;
  *
  * @param <T> Type of the content to be boxed
  * @author Gon Yi
- * @version 0.0.4
+ * @version 0.0.5
  */
 public class Box<T> {
     private T value;
@@ -145,6 +145,22 @@ public class Box<T> {
      */
     public Box<T> eval(FnT<T> evalFn) {
         evalFn.run(this.value);
+        return this;
+    }
+
+    /**
+     * Validate the box with validation function.
+     * This will validate regardless of box's state.
+     * If the validation function couldn't validate the content of box, it will throw the throwable.
+     *
+     * @param validationFn A function validating the value. Returns true if validated.
+     * @param throwable    A throwable or an exception to be thrown if didn't get validated.
+     * @param <X>          Any throwable types 
+     * @return Self
+     * @throws X Throwable if didn't get validated
+     */
+    public <X extends Throwable> Box<T> validate(FnTRb<T> validationFn, X throwable) throws X {
+        if (!validationFn.run(this.value)) throw throwable;
         return this;
     }
 

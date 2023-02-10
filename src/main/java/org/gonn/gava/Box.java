@@ -13,7 +13,7 @@ package org.gonn.gava;
  * @author Gon Yi
  * @version 0.0.5
  */
-public class Box<T> {
+public class Box<T> implements AutoCloseable {
     private T value;
 
     /**
@@ -94,7 +94,7 @@ public class Box<T> {
      * @return self
      */
     public Box<T> then(FnT<T> modFn) {
-        if (modFn != null && this.value != null)
+        if (this.value != null)
             modFn.run(this.value);
         return this;
     }
@@ -109,7 +109,7 @@ public class Box<T> {
      * @return self
      */
     public Box<T> thenSet(FnTR<T, T> modFn) {
-        if (modFn != null && this.value != null)
+        if (this.value != null)
             this.value = modFn.run(this.value);
         return this;
     }
@@ -183,14 +183,17 @@ public class Box<T> {
      * @return new boxed R.
      */
     public <R> Box<R> map(FnTR<T, R> mapFn) {
-        if (this.value != null)
-            return new Box<>(mapFn.run(this.value));
-        return new Box<>(null);
+        return new Box<>(this.value == null ? null : mapFn.run(this.value));
     }
 
     @Override
     public String toString() {
         return value != null ? String.format("Box[%s]", value) : "Box[]";
+    }
+
+    @Override
+    public void close() {
+        this.value = null;
     }
 }
 

@@ -81,7 +81,7 @@ public class Box<T> implements AutoCloseable {
      * @param skipFn A lambda function returning true means empty the box.
      * @return Self
      */
-    public Box<T> skip(FnTRb<T> skipFn) {
+    public Box<T> skip(Fx11b<T> skipFn) {
         if (this.value != null && skipFn.run(this.value)) this.value = null;
         return this;
     }
@@ -93,7 +93,7 @@ public class Box<T> implements AutoCloseable {
      * @param modFn A function that can view or modify the content.
      * @return self
      */
-    public Box<T> then(FnT<T> modFn) {
+    public Box<T> then(Fx10<T> modFn) {
         if (this.value != null)
             modFn.run(this.value);
         return this;
@@ -108,7 +108,7 @@ public class Box<T> implements AutoCloseable {
      * @param modFn A function that takes and returns type T data.
      * @return self
      */
-    public Box<T> thenSet(FnTR<T, T> modFn) {
+    public Box<T> thenSet(Fx11<T, T> modFn) {
         if (this.value != null)
             this.value = modFn.run(this.value);
         return this;
@@ -132,7 +132,7 @@ public class Box<T> implements AutoCloseable {
      * @param valueFn A function that returns new value for the box.
      * @return Self
      */
-    public Box<T> orSet(FnR<T> valueFn) {
+    public Box<T> orSet(Fx01<T> valueFn) {
         if (this.value == null) this.value = valueFn.run();
         return this;
     }
@@ -143,7 +143,7 @@ public class Box<T> implements AutoCloseable {
      * @param evalFn A lambda function to evaluate the value. This does not return anything.
      * @return Self
      */
-    public Box<T> eval(FnT<T> evalFn) {
+    public Box<T> eval(Fx10<T> evalFn) {
         evalFn.run(this.value);
         return this;
     }
@@ -159,7 +159,7 @@ public class Box<T> implements AutoCloseable {
      * @return Self
      * @throws X Throwable if didn't get validated
      */
-    public <X extends Throwable> Box<T> validate(FnTRb<T> validationFn, X throwable) throws X {
+    public <X extends Throwable> Box<T> validate(Fx11b<T> validationFn, X throwable) throws X {
         if (!validationFn.run(this.value)) throw throwable;
         return this;
     }
@@ -170,7 +170,7 @@ public class Box<T> implements AutoCloseable {
      * @param setFn A function returning new value
      * @return A box with new value.
      */
-    public Box<T> set(FnR<T> setFn) {
+    public Box<T> set(Fx01<T> setFn) {
         this.value = setFn.run();
         return this;
     }
@@ -182,7 +182,7 @@ public class Box<T> implements AutoCloseable {
      * @param <R>   New return type
      * @return new boxed R.
      */
-    public <R> Box<R> map(FnTR<T, R> mapFn) {
+    public <R> Box<R> map(Fx11<T, R> mapFn) {
         return new Box<>(this.value == null ? null : mapFn.run(this.value));
     }
 

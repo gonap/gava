@@ -597,7 +597,7 @@ public class Common {
      * @param f    BiConsumer function, when single param such as `--disable` is given, 2nd argument for the BiConsumer
      *             will be null.
      */
-    public static void parseArgs(String[] args, FnTT<String, String> f) {
+    public static void parseArgs(String[] args, Fx20<String, String> f) {
         for (String a : args) {
             if (a.startsWith("--")) {
                 int idx = a.indexOf('=');
@@ -698,19 +698,19 @@ public class Common {
         );
     }
 
-    public static void debug(FnR<String> s) {
+    public static void debug(Fx01<String> s) {
         if (VERBOSE_MODE) log(" DEBUG  ", s.run());
     }
 
-    public static void info(FnR<String> s) {
+    public static void info(Fx01<String> s) {
         if (VERBOSE_MODE) log(" INFO  ", s.run());
     }
 
-    public static void warn(FnR<String> s) {
+    public static void warn(Fx01<String> s) {
         if (VERBOSE_MODE) log(" WARN  ", s.run());
     }
 
-    public static void error(FnR<String> s) {
+    public static void error(Fx01<String> s) {
         if (VERBOSE_MODE) log(" ERROR  ", s.run());
     }
 
@@ -727,7 +727,7 @@ public class Common {
      * @param <R>    Output type
      * @return Result from evalFn
      */
-    public static <R> R eval(FnR<R> evalFn) {
+    public static <R> R eval(Fx01<R> evalFn) {
         return evalFn.run();
     }
 
@@ -741,8 +741,24 @@ public class Common {
      * @param <R>    Output type
      * @return Result from evalFn
      */
-    public static <T, R> R eval(T t, FnTR<T, R> evalFn) {
+    public static <T, R> R eval(T t, Fx11<T, R> evalFn) {
         return evalFn.run(t);
+    }
+
+    /**
+     * Evaluate the function with a param.
+     * (This is just to reduce code.)
+     *
+     * @param t1     First param to the lambda
+     * @param t2     Second param to the lambda
+     * @param evalFn A lambda eval function
+     * @param <T1>   Type of first param
+     * @param <T2>   Type of second param
+     * @param <R>    Type of the result.
+     * @return Result from the lambda
+     */
+    public static <T1, T2, R> R eval(T1 t1, T2 t2, Fx21<T1, T2, R> evalFn) {
+        return evalFn.run(t1, t2);
     }
 
     /**

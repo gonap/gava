@@ -11,10 +11,10 @@ package org.gonn.gava;
  *
  * @author Gon Yi
  * @version 0.0.1
- * @see org.gonn.gava.FnTR
+ * @see Fx11
  */
 @FunctionalInterface
-public interface FnTRb<T> {
+public interface Fx11b<T> {
     boolean run(T t);
 }
 

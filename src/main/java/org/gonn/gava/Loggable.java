@@ -18,15 +18,15 @@ public interface Loggable<T> {
     // LOGGING
     // Log message takes a supplier function to reduce allocation
     // ====================================================================================================
-    void trace(FnR<T> msg);
+    void trace(Fx01<T> msg);
 
-    void debug(FnR<T> msg);
+    void debug(Fx01<T> msg);
 
-    void info(FnR<T> msg);
+    void info(Fx01<T> msg);
 
-    void warn(FnR<T> msg);
+    void warn(Fx01<T> msg);
 
-    void error(FnR<T> msg);
+    void error(Fx01<T> msg);
 
-    void fatal(FnR<T> msg);
+    void fatal(Fx01<T> msg);
 }

@@ -18,7 +18,7 @@ import java.util.function.BiConsumer;
  * @version 0.0.2
  */
 public class Config implements Storable<String, String>, AutoCloseable {
-    private static DevLogger log;
+    private static TempLogger log;
 
     private static String COMMENT = "#";
     private static String SEPARATOR = "=";
@@ -31,9 +31,9 @@ public class Config implements Storable<String, String>, AutoCloseable {
         this(filename, null);
     }
 
-    public Config(String filename, FnTTR<String, String, Boolean> lineFilter) throws IOException {
+    public Config(String filename, Fx21<String, String, Boolean> lineFilter) throws IOException {
         this.f = new File(filename);
-        this.log = new DevLogger(Config.class, filename);
+        this.log = new TempLogger(Config.class, filename);
 
         if (!this.f.exists() && this.f.createNewFile()) this.log.info(() -> "Created a new file <" + filename);
 

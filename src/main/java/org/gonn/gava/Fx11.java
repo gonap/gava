@@ -6,14 +6,15 @@
 package org.gonn.gava;
 
 /**
- * Lambda function that takes a param T.
+ * Lambda function that takes a param T, and returns a param R.
  * Similar to java.util.function package's, but functional interface in Gava has `run()` method.
  *
  * @param <T> input type
+ * @param <R> return type
  * @author Gon Yi
  * @version 0.0.1
  */
 @FunctionalInterface
-public interface FnT<T> {
-    void run(T t);
+public interface Fx11<T, R> {
+    R run(T t);
 }

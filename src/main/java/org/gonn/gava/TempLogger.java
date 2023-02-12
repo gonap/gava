@@ -14,7 +14,7 @@ package org.gonn.gava;
  * @author Gon Yi
  * @version 1.3.1
  */
-public class DevLogger implements Loggable<String> {
+public class TempLogger implements Loggable<String> {
     public static final byte LV_ALL = 0;
     public static final byte LV_TRACE = 1;
     public static final byte LV_DEBUG = 2;
@@ -27,9 +27,9 @@ public class DevLogger implements Loggable<String> {
     public static final String ENV_LOG_LEVEL = "LOG_LEVEL";
     public static final String ENV_LOG_TIMESTAMP = "LOG_TIMESTAMP";
     public static final String ENV_LOG_FILELINE = "LOG_FILELINE";
-    private static final String ME = DevLogger.class.getSimpleName();  // this is a class name in string.
+    private static final String ME = TempLogger.class.getSimpleName();  // this is a class name in string.
     private final String name;
-    private FnTT<Byte, String> writer;
+    private Fx20<Byte, String> writer;
 
     // Default value
     private byte level = LV_OFF;
@@ -50,15 +50,15 @@ public class DevLogger implements Loggable<String> {
      *
      * @param name of the class the logger belongs to.
      */
-    public DevLogger(String name) {
+    public TempLogger(String name) {
         this.name = name; // set object's name
 
         // LOG LEVEL: Use individual object's level first, IF NOT, use global.
         // IF logger name is set to "MyApp", MYAPP_LOG_OUTPUT will be checked first,
         // and then LOG_OUTPUT.
-        String tmpThisLevel = this.name.toUpperCase() + "_" + DevLogger.ENV_LOG_LEVEL;
+        String tmpThisLevel = this.name.toUpperCase() + "_" + TempLogger.ENV_LOG_LEVEL;
         String tmpLevel = Common.getConfig(tmpThisLevel, null);
-        tmpLevel = (tmpLevel != null) ? tmpLevel : Common.getConfig(DevLogger.ENV_LOG_LEVEL, "");
+        tmpLevel = (tmpLevel != null) ? tmpLevel : Common.getConfig(TempLogger.ENV_LOG_LEVEL, "");
         this.setLevel(tmpLevel);
 
 
@@ -75,7 +75,7 @@ public class DevLogger implements Loggable<String> {
         this.enable(true); // enable the logger based on level and output
     }
 
-    public DevLogger(Class<?> c) {
+    public TempLogger(Class<?> c) {
         this(c.getSimpleName());
     }
 
@@ -86,11 +86,11 @@ public class DevLogger implements Loggable<String> {
      * @param c          any class
      * @param identifier if there's additional information about the logger
      */
-    public DevLogger(Class<?> c, String identifier) {
+    public TempLogger(Class<?> c, String identifier) {
         this(c.getSimpleName() + ":" + identifier);
     }
 
-    private static String formatter(String name, String level, FnR<String> msg, boolean useTimestamp, boolean useFileLine, int skip) {
+    private static String formatter(String name, String level, Fx01<String> msg, boolean useTimestamp, boolean useFileLine, int skip) {
         StringBuilder sb = new StringBuilder(200);
         // Add timestamp
         if (useTimestamp) {
@@ -143,7 +143,7 @@ public class DevLogger implements Loggable<String> {
      * @param writer consumer function takes a string.
      * @return self
      */
-    public DevLogger setOutput(FnTT<Byte, String> writer) {
+    public TempLogger setOutput(Fx20<Byte, String> writer) {
         this.writer = writer;
         return this.enable(true);
     }
@@ -155,7 +155,7 @@ public class DevLogger implements Loggable<String> {
 
     // Enables the logger IF tf is true, and output is set.
     // This only enables when it can be enabled.
-    private DevLogger enable(boolean tf) {
+    private TempLogger enable(boolean tf) {
         this.enabled = tf && isLoggable();
         return this;
     }
@@ -167,7 +167,7 @@ public class DevLogger implements Loggable<String> {
      * @param fileline  filename and line number. (true/false)
      * @return self
      */
-    public DevLogger setFormat(boolean timestamp, boolean fileline) {
+    public TempLogger setFormat(boolean timestamp, boolean fileline) {
         this.useTimestamp = timestamp;
         this.useFileLine = fileline;
         return this;
@@ -179,83 +179,83 @@ public class DevLogger implements Loggable<String> {
      * @param level String, char, integer, or byte
      * @return self
      */
-    public DevLogger setLevel(String level) {
+    public TempLogger setLevel(String level) {
         if (level == null || level.length() == 0) return this;
         return this.setLevel(parseLevel(level.charAt(0)));
     }
 
-    public DevLogger setLevel(byte level) {
+    public TempLogger setLevel(byte level) {
         this.level = level;
         return this.enable(true);
     }
 
-    public DevLogger setLevel(int level) {
+    public TempLogger setLevel(int level) {
         return this.setLevel((byte) level);
     }
 
-    public DevLogger setLevel(char level) {
+    public TempLogger setLevel(char level) {
         return this.setLevel(parseLevel(level));
     }
 
 
     @Override
-    public void trace(FnR<String> msg) {
-        if (this.enabled && this.level <= DevLogger.LV_TRACE)
-            this.writer.run(DevLogger.LV_TRACE,
-                    DevLogger.formatter(this.name, "TRACE", msg, this.useTimestamp, this.useFileLine, 0));
+    public void trace(Fx01<String> msg) {
+        if (this.enabled && this.level <= TempLogger.LV_TRACE)
+            this.writer.run(TempLogger.LV_TRACE,
+                    TempLogger.formatter(this.name, "TRACE", msg, this.useTimestamp, this.useFileLine, 0));
     }
 
     @Override
-    public void debug(FnR<String> msg) {
-        if (this.enabled && this.level <= DevLogger.LV_DEBUG)
-            this.writer.run(DevLogger.LV_DEBUG,
-                    DevLogger.formatter(this.name, "DEBUG", msg, this.useTimestamp, this.useFileLine, 0));
+    public void debug(Fx01<String> msg) {
+        if (this.enabled && this.level <= TempLogger.LV_DEBUG)
+            this.writer.run(TempLogger.LV_DEBUG,
+                    TempLogger.formatter(this.name, "DEBUG", msg, this.useTimestamp, this.useFileLine, 0));
     }
 
     @Override
-    public void info(FnR<String> msg) {
-        if (this.enabled && this.level <= DevLogger.LV_INFO)
-            this.writer.run(DevLogger.LV_INFO,
-                    DevLogger.formatter(this.name, "INFO ", msg, this.useTimestamp, this.useFileLine, 0));
+    public void info(Fx01<String> msg) {
+        if (this.enabled && this.level <= TempLogger.LV_INFO)
+            this.writer.run(TempLogger.LV_INFO,
+                    TempLogger.formatter(this.name, "INFO ", msg, this.useTimestamp, this.useFileLine, 0));
     }
 
     @Override
-    public void warn(FnR<String> msg) {
-        if (this.enabled && this.level <= DevLogger.LV_WARN)
-            this.writer.run(DevLogger.LV_WARN,
-                    DevLogger.formatter(this.name, "WARN ", msg, this.useTimestamp, this.useFileLine, 0));
+    public void warn(Fx01<String> msg) {
+        if (this.enabled && this.level <= TempLogger.LV_WARN)
+            this.writer.run(TempLogger.LV_WARN,
+                    TempLogger.formatter(this.name, "WARN ", msg, this.useTimestamp, this.useFileLine, 0));
     }
 
     @Override
-    public void error(FnR<String> msg) {
+    public void error(Fx01<String> msg) {
         if (this.enabled && this.level <= LV_ERROR)
             this.writer.run(LV_ERROR,
-                    DevLogger.formatter(this.name, "ERROR", msg, this.useTimestamp, this.useFileLine, 0));
+                    TempLogger.formatter(this.name, "ERROR", msg, this.useTimestamp, this.useFileLine, 0));
     }
 
     @Override
-    public void fatal(FnR<String> msg) {
-        if (this.enabled && this.level <= DevLogger.LV_FATAL)
-            this.writer.run(DevLogger.LV_FATAL,
-                    DevLogger.formatter(this.name, "FATAL", msg, this.useTimestamp, this.useFileLine, 0));
+    public void fatal(Fx01<String> msg) {
+        if (this.enabled && this.level <= TempLogger.LV_FATAL)
+            this.writer.run(TempLogger.LV_FATAL,
+                    TempLogger.formatter(this.name, "FATAL", msg, this.useTimestamp, this.useFileLine, 0));
     }
 
-    public void warn(FnR<String> msg, int skip) {
-        if (this.enabled && this.level <= DevLogger.LV_WARN)
-            this.writer.run(DevLogger.LV_WARN,
-                    DevLogger.formatter(this.name, "WARN ", msg, this.useTimestamp, this.useFileLine, skip));
+    public void warn(Fx01<String> msg, int skip) {
+        if (this.enabled && this.level <= TempLogger.LV_WARN)
+            this.writer.run(TempLogger.LV_WARN,
+                    TempLogger.formatter(this.name, "WARN ", msg, this.useTimestamp, this.useFileLine, skip));
     }
 
-    public void error(FnR<String> msg, int skip) {
-        if (this.enabled && this.level <= DevLogger.LV_ERROR)
-            this.writer.run(DevLogger.LV_ERROR,
-                    DevLogger.formatter(this.name, "ERROR", msg, this.useTimestamp, this.useFileLine, skip));
+    public void error(Fx01<String> msg, int skip) {
+        if (this.enabled && this.level <= TempLogger.LV_ERROR)
+            this.writer.run(TempLogger.LV_ERROR,
+                    TempLogger.formatter(this.name, "ERROR", msg, this.useTimestamp, this.useFileLine, skip));
     }
 
-    public void fatal(FnR<String> msg, int skip) {
-        if (this.enabled && this.level <= DevLogger.LV_FATAL)
-            this.writer.run(DevLogger.LV_FATAL,
-                    DevLogger.formatter(this.name, "FATAL", msg, this.useTimestamp, this.useFileLine, skip));
+    public void fatal(Fx01<String> msg, int skip) {
+        if (this.enabled && this.level <= TempLogger.LV_FATAL)
+            this.writer.run(TempLogger.LV_FATAL,
+                    TempLogger.formatter(this.name, "FATAL", msg, this.useTimestamp, this.useFileLine, skip));
     }
 
     @Override
@@ -268,7 +268,7 @@ public class DevLogger implements Loggable<String> {
      *
      * @return GavaLog for chaining...
      */
-    public DevLogger testing() {
+    public TempLogger testing() {
         this.setOutput((lv, s) -> System.err.println(s))
                 .setFormat(true, true)
                 .setLevel(LV_ALL)

@@ -81,7 +81,7 @@ public class Box<T> implements AutoCloseable {
      * @param skipFn A lambda function returning true means empty the box.
      * @return Self
      */
-    public Box<T> skip(Fx11b<T> skipFn) {
+    public Box<T> skip(FxBool<T> skipFn) {
         if (this.value != null && skipFn.run(this.value)) this.value = null;
         return this;
     }
@@ -159,7 +159,7 @@ public class Box<T> implements AutoCloseable {
      * @return Self
      * @throws X Throwable if didn't get validated
      */
-    public <X extends Throwable> Box<T> validate(Fx11b<T> validationFn, X throwable) throws X {
+    public <X extends Throwable> Box<T> validate(FxBool<T> validationFn, X throwable) throws X {
         if (!validationFn.run(this.value)) throw throwable;
         return this;
     }

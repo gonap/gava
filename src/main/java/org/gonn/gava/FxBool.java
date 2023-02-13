@@ -14,7 +14,7 @@ package org.gonn.gava;
  * @see Fx11
  */
 @FunctionalInterface
-public interface Fx11b<T> {
+public interface FxBool<T> {
     boolean run(T t);
 }
 

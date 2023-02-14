@@ -20,9 +20,9 @@
  * </p>
  *
  * @author Gon Yi
- * @version 0.0.9
+ * @version 0.0
  * @see <a href="https://gonn.org">gonn.org</a>
- * @since 0.0.1
+ * @since 0.0
  */
 
 package org.gonn.gava; 

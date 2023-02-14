@@ -18,4 +18,5 @@ Gava is a collection of simple but frequently used code.
 - `v0.0.3`: Simplify `Storable`. Deleted `close()` and `update()` from the interface
 - `v0.0.4`: for cleaning up the `Box` 
 - `v0.0.5`: for `Box`, added `validate()` method that can throw an exception
-- `v0.0.7`: Lambda functions `FnAA` changed to `FxNN`.  
+- `v0.0.7`: Lambda functions `FnAA` changed to `FxNN`. 
+- `v0.0.9`: Add functional interface FxModify and FxThrow which both are based on Fx11.

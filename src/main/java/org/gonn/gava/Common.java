@@ -762,6 +762,33 @@ public class Common {
     }
 
     /**
+     * If t is null, return fallback value.
+     *
+     * @param t value to exam
+     * @param fallback value to return if t is null
+     * @param <T> output type
+     * @return t if t is not null otherwise fallback.
+     */
+    public static <T> T mustGet(T t, T fallback) {
+        return t != null ? t : fallback;
+    }
+
+    /**
+     * If t is null, throw an exception
+     *
+     * @param t value to exam
+     * @param exception exception to throw if t is null
+     * @param <X> throwable type'
+     * @param <T> input type
+     * @return t if t is not null
+     * @throws X if t is null
+     */
+    public static <X extends Throwable, T> T mustGet(T t, X exception) throws X {
+        if(t == null) throw exception;
+        return t;
+    }
+
+    /**
      * Get hash from the input string
      *
      * @param s Input string

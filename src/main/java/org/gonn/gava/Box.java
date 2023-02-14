@@ -108,7 +108,7 @@ public class Box<T> implements AutoCloseable {
      * @param modFn A function that takes and returns type T data.
      * @return self
      */
-    public Box<T> thenSet(Fx11<T, T> modFn) {
+    public Box<T> thenSet(FxModify<T> modFn) {
         if (this.value != null)
             this.value = modFn.run(this.value);
         return this;

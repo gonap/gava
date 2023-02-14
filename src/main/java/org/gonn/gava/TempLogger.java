@@ -272,7 +272,7 @@ public class TempLogger implements Loggable<String> {
         this.setOutput((lv, s) -> System.err.println(s))
                 .setFormat(true, true)
                 .setLevel(LV_ALL)
-                .warn(() -> "TESTING ON - Disable testing() before deployment", 1);
+                .warn(() -> "TESTING IS ON - Disable testing() before deployment", 1);
         return this;
     }
 }

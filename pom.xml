@@ -6,7 +6,7 @@
 
     <groupId>org.gonn</groupId>
     <artifactId>gava</artifactId>
-    <version>0.0.9</version>
+    <version>0.0.10-SNAPSHOT</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Macro-like frequently used functions/classes</description>
     <url>https://github.com/gonap/gava</url>
@@ -120,6 +120,9 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                    <excludes>
+                        <exclude>**/*TEST.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
 

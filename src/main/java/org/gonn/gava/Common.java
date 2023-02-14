@@ -28,9 +28,38 @@ public class Common {
     public static final int HOUR = MINUTE * 60;
     public static final int DAY = HOUR * 24;
 
+    public static final String[] EMPTY_STRING_ARRAY = new String[]{};
+
     // Common is a collection of static methods. Therefore, no need for constructor.
     private Common() {
     }
+
+    /**
+     * Creates a subset of String array. Take a source array, index to start, and index to end.
+     * <p>
+     * E.g.
+     * <code>subset(src, 0, -3)</code> creates a subset from the beggining of array EXCEPT last 3.
+     * <code>subset(src, -3, 0)</code> creates a subset of last 3.
+     * <code>subset(src, 1, 3)</code>  creates a subset of 2nd and 3rd (idx 2 and 3) item.
+     * </p>
+     *
+     * @param src Source String array
+     * @param start Index from
+     * @param end   Index end
+     * @return New subset of the array
+     */
+    public static String[] subset(String[] src, int start, int end) {
+        if (src == null) return null;
+        int sz = src.length;
+        int p1 = substringCalc(sz, start, false);
+        int p2 = substringCalc(sz, end, true);
+        if(p1 > p2) return EMPTY_STRING_ARRAY;
+        String[] out = new String[p2 - p1];
+        System.arraycopy(src, p1, out, 0, p2 - p1);
+        return out;
+    }
+
+
 
     /**
      * Take a char c and repeat it n times.

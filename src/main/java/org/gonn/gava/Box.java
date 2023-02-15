@@ -13,7 +13,7 @@ package org.gonn.gava;
  * @author Gon Yi
  * @version 0.0.5
  */
-public class Box<T> implements AutoCloseable {
+public class Box<T> {
     private T value;
 
     /**
@@ -191,10 +191,6 @@ public class Box<T> implements AutoCloseable {
         return value != null ? String.format("Box[%s]", value) : "Box[]";
     }
 
-    @Override
-    public void close() {
-        this.value = null;
-    }
 }
 
 

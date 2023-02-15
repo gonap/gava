@@ -170,8 +170,19 @@ public class Box<T> {
      * @param setFn A function returning new value
      * @return A box with new value.
      */
-    public Box<T> set(Fx01<T> setFn) {
-        this.value = setFn.run();
+    public Box<T> set(FxUnary<T> setFn) {
+        this.value = setFn.run(this.value);
+        return this;
+    }
+
+    /**
+     * Regardless of the box's state (whether full or not), set the content of the box.
+     *
+     * @param newValue New value to be used. This has to be the same type with current. 
+     * @return A box with new value.
+     */
+    public Box<T> reset(T newValue) {
+        this.value = newValue;
         return this;
     }
 
@@ -188,7 +199,7 @@ public class Box<T> {
 
     @Override
     public String toString() {
-        return value != null ? String.format("Box[%s]", value) : "Box[]";
+        return "" + this.value; 
     }
 
 }

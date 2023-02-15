@@ -22,5 +22,7 @@ Gava is a collection of simple but frequently used code.
 - `v0.0.9`: Add functional interface FxModify and FxThrow which both are based on Fx11.
 - `v0.0.10` 
   - Box is no longer autocloseable.
+  - Box.toString() returns only its internal value. 
   - FxModify is now called FxUnary
   - FxInt has added
+

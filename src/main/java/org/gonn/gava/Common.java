@@ -791,6 +791,25 @@ public class Common {
     }
 
     /**
+     * Evaluate a given function with a param.
+     * (This is to reduce code. This also catches exception.)
+     *
+     * @param t  An input value to be evaluated
+     * @param evalXFn  A lambda takes T and returns R, also can throw an exception.
+     * @param fallbackFn  A lambda takes an exception, and returns R.
+     * @return  Result from evalXFn if successfully ran, otherwise result from fallbackFn.
+     * @param <T> Input type
+     * @param <R> Output type
+     */
+    public static <T, R> R evalX(T t, FxThrow<T, R> evalXFn, Fx11<Exception, R> fallbackFn) {
+        try {
+            return evalXFn.run(t);
+        } catch (Exception e) {
+            return fallbackFn.run(e);
+        }
+    }
+
+    /**
      * If t is null, return fallback value.
      *
      * @param t value to exam

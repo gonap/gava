@@ -6,15 +6,15 @@
 package org.gonn.gava;
 
 /**
- * A lambda functino that returns the data with same type with input 
- * (e.g. Fx11 with type T and T, instead of T1 and T2)
+ * Lambda function that returns (primitive) integer.
+ * While R means return of generic value, Rb means return of integer.
  *
- * @param <T> input and output type
  * @author Gon Yi
  * @version 0.0.1
- * @see Fx11
+ * @see FxBool
  */
 @FunctionalInterface
-public interface FxModify<T> {
-    T run(T t);
+public interface FxInt<T> {
+    int run(T t);
 }
+

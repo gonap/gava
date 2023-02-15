@@ -34,9 +34,10 @@ public interface Storable<T, R> {
      * @param key to the record.
      * @param <E> any exception
      * @param rec to save.
+     * @return true if successfully added/updated.
      * @throws E any exception
      */
-    <E extends Throwable> void set(T key, R rec) throws E;
+    <E extends Throwable> boolean set(T key, R rec) throws E;
 
     /**
      * Delete a record

@@ -25,4 +25,5 @@ Gava is a collection of simple but frequently used code.
   - Box.toString() returns only its internal value. 
   - FxModify is now called FxUnary
   - FxInt has added
-
+- `v0.0.12`
+  - Storable.set() now returns boolean

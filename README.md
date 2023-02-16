@@ -31,3 +31,5 @@ Gava is a collection of simple but frequently used code.
   - Rename Common to Stu (Static Util) 
 - `v0.0.14`
   - Rename `Stu.forEach` -> `Stu.forEachSet`, create `Stu.forEach` which doesn't have return type.
+- `v0.0.15`
+  - Updated logger a function to skip.

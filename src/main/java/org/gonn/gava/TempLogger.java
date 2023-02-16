@@ -12,7 +12,7 @@ package org.gonn.gava;
  * NOTE: setting output is available only at global level.
  *
  * @author Gon Yi
- * @version 1.3.1
+ * @version 1.3.2
  */
 public class TempLogger implements Loggable<String> {
     public static final byte LV_ALL = 0;
@@ -36,6 +36,7 @@ public class TempLogger implements Loggable<String> {
     private boolean enabled = false;
     private boolean useTimestamp = true;
     private boolean useFileLine = false;
+    private int callerSkipAdjustment = 1;
 
     /**
      * When DevLogger is created, it will get Property and ENV variables for activating the logger.
@@ -199,45 +200,40 @@ public class TempLogger implements Loggable<String> {
 
 
     @Override
-    public void trace(Fx01<String> msg) {
+    public void trace(Fx01<String> msg) { trace(msg, this.callerSkipAdjustment); }
+
+    @Override
+    public void debug(Fx01<String> msg) { debug(msg, this.callerSkipAdjustment); }
+
+    @Override
+    public void info(Fx01<String> msg) { info(msg, this.callerSkipAdjustment); }
+
+    @Override
+    public void warn(Fx01<String> msg) { warn(msg, this.callerSkipAdjustment); }
+
+    @Override
+    public void error(Fx01<String> msg) { error(msg, this.callerSkipAdjustment); }
+
+    @Override
+    public void fatal(Fx01<String> msg) { fatal(msg, this.callerSkipAdjustment); }
+
+
+    public void trace(Fx01<String> msg, int skip) {
         if (this.enabled && this.level <= TempLogger.LV_TRACE)
             this.writer.run(TempLogger.LV_TRACE,
-                    TempLogger.formatter(this.name, "TRACE", msg, this.useTimestamp, this.useFileLine, 0));
+                    TempLogger.formatter(this.name, "TRACE", msg, this.useTimestamp, this.useFileLine, skip));
     }
 
-    @Override
-    public void debug(Fx01<String> msg) {
+    public void debug(Fx01<String> msg, int skip) {
         if (this.enabled && this.level <= TempLogger.LV_DEBUG)
             this.writer.run(TempLogger.LV_DEBUG,
-                    TempLogger.formatter(this.name, "DEBUG", msg, this.useTimestamp, this.useFileLine, 0));
+                    TempLogger.formatter(this.name, "DEBUG", msg, this.useTimestamp, this.useFileLine, skip));
     }
 
-    @Override
-    public void info(Fx01<String> msg) {
+    public void info(Fx01<String> msg, int skip) {
         if (this.enabled && this.level <= TempLogger.LV_INFO)
             this.writer.run(TempLogger.LV_INFO,
-                    TempLogger.formatter(this.name, "INFO ", msg, this.useTimestamp, this.useFileLine, 0));
-    }
-
-    @Override
-    public void warn(Fx01<String> msg) {
-        if (this.enabled && this.level <= TempLogger.LV_WARN)
-            this.writer.run(TempLogger.LV_WARN,
-                    TempLogger.formatter(this.name, "WARN ", msg, this.useTimestamp, this.useFileLine, 0));
-    }
-
-    @Override
-    public void error(Fx01<String> msg) {
-        if (this.enabled && this.level <= LV_ERROR)
-            this.writer.run(LV_ERROR,
-                    TempLogger.formatter(this.name, "ERROR", msg, this.useTimestamp, this.useFileLine, 0));
-    }
-
-    @Override
-    public void fatal(Fx01<String> msg) {
-        if (this.enabled && this.level <= TempLogger.LV_FATAL)
-            this.writer.run(TempLogger.LV_FATAL,
-                    TempLogger.formatter(this.name, "FATAL", msg, this.useTimestamp, this.useFileLine, 0));
+                    TempLogger.formatter(this.name, "INFO ", msg, this.useTimestamp, this.useFileLine, skip));
     }
 
     public void warn(Fx01<String> msg, int skip) {
@@ -247,8 +243,8 @@ public class TempLogger implements Loggable<String> {
     }
 
     public void error(Fx01<String> msg, int skip) {
-        if (this.enabled && this.level <= TempLogger.LV_ERROR)
-            this.writer.run(TempLogger.LV_ERROR,
+        if (this.enabled && this.level <= LV_ERROR)
+            this.writer.run(LV_ERROR,
                     TempLogger.formatter(this.name, "ERROR", msg, this.useTimestamp, this.useFileLine, skip));
     }
 
@@ -256,6 +252,17 @@ public class TempLogger implements Loggable<String> {
         if (this.enabled && this.level <= TempLogger.LV_FATAL)
             this.writer.run(TempLogger.LV_FATAL,
                     TempLogger.formatter(this.name, "FATAL", msg, this.useTimestamp, this.useFileLine, skip));
+    }
+
+    /**
+     * Adjust caller skips. Useful when TempLogger is extended into a wrapper class.
+     *
+     * @param skip Skip adjustment
+     * @return self
+     */
+    public TempLogger adjustSkip(int skip) {
+        this.callerSkipAdjustment = skip;
+        return this;
     }
 
     @Override

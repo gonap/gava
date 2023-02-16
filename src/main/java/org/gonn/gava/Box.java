@@ -170,9 +170,8 @@ public class Box<T> {
      * @param setFn A function returning new value
      * @return A box with new value.
      */
-    public Box<T> set(FxUnary<T> setFn) {
-        this.value = setFn.run(this.value);
-        return this;
+    public <R> Box<R> set(Fx01<R> setFn) {
+        return new Box<>(setFn.run());
     }
 
     /**

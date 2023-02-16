@@ -7,10 +7,10 @@ package org.gonn.gava;
 
 
 /**
- * A collection of static methods that are very frequently used.
+ * `[St]atic [U]tils` is a collection of static methods that are very frequently used.
  *
  * @author Gon Yi
- * @version 1.3.4
+ * @version 1.4.1
  */
 public class Stu {
     /**
@@ -843,12 +843,22 @@ public class Stu {
      * @param fx  lambda which modifies the src
      * @param <T> type of the array
      */
-    public static <T> void forEach(T[] src, FxUnary<T> fx) {
+    public static <T> void forEachSet(T[] src, FxUnary<T> fx) {
         for (int i = 0; i < src.length; i++) {
             src[i] = fx.run(src[i]);
         }
     }
 
+    /**
+     * Evaluate each T in T[]. 
+     *
+     * @param src source array
+     * @param fx  lambda takes each T. 
+     * @param <T> type of the array
+     */
+    public static <T> void forEach(T[] src, Fx10<T> fx) {
+        for (T t : src) fx.run(t);
+    }
 
     /**
      * Get hash from the input string

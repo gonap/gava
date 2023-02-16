@@ -29,4 +29,5 @@ Gava is a collection of simple but frequently used code.
   - Storable.set() now returns boolean
 - `v0.0.13`
   - Rename Common to Stu (Static Util) 
-
+- `v0.0.14`
+  - Rename `Stu.forEach` -> `Stu.forEachSet`, create `Stu.forEach` which doesn't have return type.

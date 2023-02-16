@@ -12,7 +12,7 @@ package org.gonn.gava;
  * @author Gon Yi
  * @version 1.3.4
  */
-public class Common {
+public class Stu {
     /**
      * Default params set when any of the method was first used.
      * EPOCH_STARTED -- record the time first library was used
@@ -30,8 +30,8 @@ public class Common {
 
     public static final String[] EMPTY_STRING_ARRAY = new String[]{};
 
-    // Common is a collection of static methods. Therefore, no need for constructor.
-    private Common() {
+    // Stu is a collection of static methods. Therefore, no need for constructor.
+    private Stu() {
     }
 
     /**
@@ -837,6 +837,20 @@ public class Common {
     }
 
     /**
+     * Modify array using fx
+     *
+     * @param src source array
+     * @param fx  lambda which modifies the src
+     * @param <T> type of the array
+     */
+    public static <T> void forEach(T[] src, FxUnary<T> fx) {
+        for (int i = 0; i < src.length; i++) {
+            src[i] = fx.run(src[i]);
+        }
+    }
+
+
+    /**
      * Get hash from the input string
      *
      * @param s Input string
@@ -857,7 +871,7 @@ public class Common {
     // MAIN for testing
     // ======================================================================
     public static void main(String[] args) {
-        System.out.println(Common.class.getPackage().getName() + " by Gonn <https://gonn.org>");
+        System.out.println(Stu.class.getPackage().getName() + " by Gonn <https://gonn.org>");
     }
 }
 

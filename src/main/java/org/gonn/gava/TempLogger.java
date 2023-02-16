@@ -57,21 +57,21 @@ public class TempLogger implements Loggable<String> {
         // IF logger name is set to "MyApp", MYAPP_LOG_OUTPUT will be checked first,
         // and then LOG_OUTPUT.
         String tmpThisLevel = this.name.toUpperCase() + "_" + TempLogger.ENV_LOG_LEVEL;
-        String tmpLevel = Common.getConfig(tmpThisLevel, null);
-        tmpLevel = (tmpLevel != null) ? tmpLevel : Common.getConfig(TempLogger.ENV_LOG_LEVEL, "");
+        String tmpLevel = Stu.getConfig(tmpThisLevel, null);
+        tmpLevel = (tmpLevel != null) ? tmpLevel : Stu.getConfig(TempLogger.ENV_LOG_LEVEL, "");
         this.setLevel(tmpLevel);
 
 
         // LOG OUTPUT: Output are the global level.
-        String tmpOut = Common.getConfig(ENV_LOG_OUTPUT, "").toUpperCase();
+        String tmpOut = Stu.getConfig(ENV_LOG_OUTPUT, "").toUpperCase();
         if (tmpOut.length() == 0 || tmpOut.equals("STDOUT")) {
             this.setOutput((lv, s) -> System.out.println(s));  // default to stdout
         } else if (tmpOut.equals("STDERR")) {
             this.setOutput((lv, s) -> System.err.println(s));
         }
 
-        this.useTimestamp = Common.getConfig(ENV_LOG_TIMESTAMP, true);
-        this.useFileLine = Common.getConfig(ENV_LOG_FILELINE, false);
+        this.useTimestamp = Stu.getConfig(ENV_LOG_TIMESTAMP, true);
+        this.useFileLine = Stu.getConfig(ENV_LOG_FILELINE, false);
         this.enable(true); // enable the logger based on level and output
     }
 
@@ -94,7 +94,7 @@ public class TempLogger implements Loggable<String> {
         StringBuilder sb = new StringBuilder(200);
         // Add timestamp
         if (useTimestamp) {
-            sb.append(Common.epochToString()).append("  ");
+            sb.append(Stu.epochToString()).append("  ");
         }
         // Add level, name, and message
         sb.append(level)
@@ -102,7 +102,7 @@ public class TempLogger implements Loggable<String> {
                 .append(msg != null ? msg.run() : "null");
         // Add fileline
         if (useFileLine) {
-            StackTraceElement caller = Common.getCaller(2 + skip);
+            StackTraceElement caller = Stu.getCaller(2 + skip);
             if (caller != null) {
                 return sb.append("  (")
                         .append(caller.getFileName())

@@ -106,12 +106,13 @@ public class Config implements Storable<String, String>, AutoCloseable {
     }
 
     @Override
-    public void set(String key, String rec) {
+    public boolean set(String key, String rec) {
         if (rec != null && rec.indexOf('\n') > -1) {
             this.conf.put(key, rec.replace("\n", "\\n") + "\n");
         } else {
             this.conf.put(key, rec);
         }
+        return true;
     }
 
     @Override

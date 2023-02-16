@@ -37,6 +37,17 @@ public class Box<T> {
     }
 
     /**
+     * Static constructor:
+     *
+     * @param fx A lambda to create a target object to be boxed.
+     * @param <R> Type of the target object.
+     * @return Boxed target object.
+     */
+    public static <R> Box<R> of(Fx01<R> fx) {
+        return new Box<>(fx.run());
+    }
+
+    /**
      * Check if the box content is NULL.
      *
      * @return true if the content is NULL.
@@ -168,6 +179,7 @@ public class Box<T> {
      * Regardless of the box's state (whether full or not), set the content of the box.
      *
      * @param setFn A function returning new value
+     * @param <R> return box type
      * @return A box with new value.
      */
     public <R> Box<R> set(Fx01<R> setFn) {

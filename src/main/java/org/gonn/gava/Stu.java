@@ -860,6 +860,19 @@ public class Stu {
     }
 
     /**
+     * Randomly picks number based on nanoTime.
+     * This cannot be trusted and this does not generate numbers with enough randomness.
+     * This is just for quick testing of picking random items.
+     *
+     * @param n Range of number. e.g. n=10, possible outcome is 0-9.
+     * @return Kind of random number.
+     */
+    public static int randomly(int n) {
+        return (int) ((System.nanoTime() % 100_000) / 1_000) % n;
+    }
+
+
+    /**
      * Get hash from the input string
      *
      * @param s Input string

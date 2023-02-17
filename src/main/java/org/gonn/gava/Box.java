@@ -39,7 +39,7 @@ public class Box<T> {
     /**
      * Static constructor:
      *
-     * @param fx A lambda to create a target object to be boxed.
+     * @param fx  A lambda to create a target object to be boxed.
      * @param <R> Type of the target object.
      * @return Boxed target object.
      */
@@ -126,6 +126,61 @@ public class Box<T> {
     }
 
     /**
+     * If the box is full, and the condition has met, then execute the function.
+     *
+     * @param condition Condition to evaluate weather to run
+     * @param modFn     If the condition has met, execute.
+     * @return Self.
+     */
+    public Box<T> thenIf(FxBool<T> condition, Fx10<T> modFn) {
+        if (this.value != null && condition.run(this.value))
+            modFn.run(this.value);
+        return this;
+    }
+
+    /**
+     * Execute fnTrue if the condition has met, otherwise, execute fnFalse.
+     *
+     * @param condition Condition to evaluate
+     * @param fnTrue    A lambda to run if the condition has met
+     * @param fnFalse   A lambda to run if the condition has NOT met.
+     * @return New value
+     */
+    public Box<T> thenIf(FxBool<T> condition, Fx10<T> fnTrue, Fx10<T> fnFalse) {
+        if (this.value == null) return this;
+        if (condition.run(this.value)) fnTrue.run(this.value);
+        else fnFalse.run(this.value);
+        return this;
+    }
+
+    /**
+     * If the box is full, and the condition has met, then execute the function.
+     *
+     * @param condition Condition to evaluate weather to run
+     * @param modFn     If the condition has met, execute.
+     * @return Self.
+     */
+    public Box<T> thenSetIf(FxBool<T> condition, FxUnary<T> modFn) {
+        if (this.value != null && condition.run(this.value))
+            this.value = modFn.run(this.value);
+        return this;
+    }
+
+    /**
+     * Same as thenSet but with a condition
+     *
+     * @param condition Condition to check
+     * @param fnTrue    A lambda to run if the result of condition is true.
+     * @param fnFalse   A lambda to run if the result of condtion is false.
+     * @return Self with new value.
+     */
+    public Box<T> thenSetIf(FxBool<T> condition, FxUnary<T> fnTrue, FxUnary<T> fnFalse) {
+        if (this.value == null) return this;
+        this.value = (condition.run(this.value)) ? fnTrue.run(this.value) : fnFalse.run(this.value);
+        return this;
+    }
+
+    /**
      * If the box is empty, execute the Runnable.
      *
      * @param r A runnable to be executed. Since the box is empty, it won't do anything to the box.
@@ -166,7 +221,7 @@ public class Box<T> {
      *
      * @param validationFn A function validating the value. Returns true if validated.
      * @param throwable    A throwable or an exception to be thrown if didn't get validated.
-     * @param <X>          Any throwable types 
+     * @param <X>          Any throwable types
      * @return Self
      * @throws X Throwable if didn't get validated
      */
@@ -179,7 +234,7 @@ public class Box<T> {
      * Regardless of the box's state (whether full or not), set the content of the box.
      *
      * @param setFn A function returning new value
-     * @param <R> return box type
+     * @param <R>   return box type
      * @return A box with new value.
      */
     public <R> Box<R> set(Fx01<R> setFn) {
@@ -189,7 +244,7 @@ public class Box<T> {
     /**
      * Regardless of the box's state (whether full or not), set the content of the box.
      *
-     * @param newValue New value to be used. This has to be the same type with current. 
+     * @param newValue New value to be used. This has to be the same type with current.
      * @return A box with new value.
      */
     public Box<T> reset(T newValue) {
@@ -208,9 +263,27 @@ public class Box<T> {
         return new Box<>(this.value == null ? null : mapFn.run(this.value));
     }
 
+    /**
+     * Map value to another type. But, if there's an exception thrown,
+     * this will fallback.
+     *
+     * @param fnMap      Mapping function
+     * @param fnFallback Fallback function
+     * @param <R>        Return value
+     * @return New value in new box.
+     */
+    public <R> Box<R> map(FxThrow<T, R> fnMap, Fx11<Exception, R> fnFallback) {
+        if (this.value == null) return of(null);
+        try {
+            return of(fnMap.run(this.value));
+        } catch (Exception e) {
+            return of(fnFallback.run(e));
+        }
+    }
+
     @Override
     public String toString() {
-        return "" + this.value; 
+        return "" + this.value;
     }
 
 }

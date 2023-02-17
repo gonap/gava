@@ -43,7 +43,7 @@ public class Stu {
      * <code>subset(src, 1, 3)</code>  creates a subset of 2nd and 3rd (idx 2 and 3) item.
      * </p>
      *
-     * @param src Source String array
+     * @param src   Source String array
      * @param start Index from
      * @param end   Index end
      * @return New subset of the array
@@ -53,12 +53,11 @@ public class Stu {
         int sz = src.length;
         int p1 = substringCalc(sz, start, false);
         int p2 = substringCalc(sz, end, true);
-        if(p1 > p2) return EMPTY_STRING_ARRAY;
+        if (p1 > p2) return EMPTY_STRING_ARRAY;
         String[] out = new String[p2 - p1];
         System.arraycopy(src, p1, out, 0, p2 - p1);
         return out;
     }
-
 
 
     /**
@@ -794,12 +793,12 @@ public class Stu {
      * Evaluate a given function with a param.
      * (This is to reduce code. This also catches exception.)
      *
-     * @param t  An input value to be evaluated
-     * @param evalXFn  A lambda takes T and returns R, also can throw an exception.
-     * @param fallbackFn  A lambda takes an exception, and returns R.
-     * @return  Result from evalXFn if successfully ran, otherwise result from fallbackFn.
-     * @param <T> Input type
-     * @param <R> Output type
+     * @param t          An input value to be evaluated
+     * @param evalXFn    A lambda takes T and returns R, also can throw an exception.
+     * @param fallbackFn A lambda takes an exception, and returns R.
+     * @param <T>        Input type
+     * @param <R>        Output type
+     * @return Result from evalXFn if successfully ran, otherwise result from fallbackFn.
      */
     public static <T, R> R evalX(T t, FxThrow<T, R> evalXFn, Fx11<Exception, R> fallbackFn) {
         try {
@@ -812,9 +811,9 @@ public class Stu {
     /**
      * If t is null, return fallback value.
      *
-     * @param t value to exam
+     * @param t        value to exam
      * @param fallback value to return if t is null
-     * @param <T> output type
+     * @param <T>      output type
      * @return t if t is not null otherwise fallback.
      */
     public static <T> T mustGet(T t, T fallback) {
@@ -824,15 +823,15 @@ public class Stu {
     /**
      * If t is null, throw an exception
      *
-     * @param t value to exam
+     * @param t         value to exam
      * @param exception exception to throw if t is null
-     * @param <X> throwable type'
-     * @param <T> input type
+     * @param <X>       throwable type'
+     * @param <T>       input type
      * @return t if t is not null
      * @throws X if t is null
      */
     public static <X extends Throwable, T> T mustGet(T t, X exception) throws X {
-        if(t == null) throw exception;
+        if (t == null) throw exception;
         return t;
     }
 
@@ -850,10 +849,10 @@ public class Stu {
     }
 
     /**
-     * Evaluate each T in T[]. 
+     * Evaluate each T in T[].
      *
      * @param src source array
-     * @param fx  lambda takes each T. 
+     * @param fx  lambda takes each T.
      * @param <T> type of the array
      */
     public static <T> void forEach(T[] src, Fx10<T> fx) {

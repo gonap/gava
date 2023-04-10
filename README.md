@@ -33,3 +33,5 @@ Gava is a collection of simple but frequently used code.
   - Rename `Stu.forEach` -> `Stu.forEachSet`, create `Stu.forEach` which doesn't have return type.
 - `v0.0.15`
   - Updated logger a function to skip.
+- `v0.0.17` 
+  - Added `Discard` class

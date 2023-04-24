@@ -35,3 +35,4 @@ Gava is a collection of simple but frequently used code.
   - Updated logger a function to skip.
 - `v0.0.17` 
   - Added `Discard` class
+- `v0.0.18` Update Config class to not store comment and/or lineFilter'd items

@@ -15,7 +15,7 @@ import java.util.function.BiConsumer;
  * Storing Configuration Property File
  *
  * @author Gon Yi
- * @version 0.0.2
+ * @version 0.0.3
  */
 public class Config implements Storable<String, String>, AutoCloseable {
     private static TempLogger log;
@@ -43,7 +43,6 @@ public class Config implements Storable<String, String>, AutoCloseable {
             for (; line != null; line = br.readLine()) {
                 lineNumber++;
                 if (line.startsWith(Config.COMMENT)) {
-                    this.conf.put(line, null);
                     continue;
                 }
                 final int p = line.indexOf(Config.SEPARATOR);
@@ -61,7 +60,6 @@ public class Config implements Storable<String, String>, AutoCloseable {
                             // add
                             this.conf.put(key, val);
                         } else {
-                            this.conf.put(line, null); // treat it as a comment 
                             this.log.trace(() -> "Per lineFilter, skip line " + tmpLineNumber + ", key=" + key);
                         }
                     } else {

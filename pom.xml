@@ -146,7 +146,7 @@
                             <Package-Title>${project.artifactId}</Package-Title>
                             <Package-Version>${project.version}</Package-Version>
                             <Package-Vendor>${project.groupId}</Package-Vendor>
-                            <Build-Date>${maven.build.timestamp</Build-Date>
+                            <Build-Date>${maven.build.timestamp}</Build-Date>
                         </manifestEntries>
                     </archive>
                 </configuration>

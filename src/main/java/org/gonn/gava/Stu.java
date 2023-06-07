@@ -303,6 +303,13 @@ public class Stu {
         return idx == n ? s.substring(end + 1) : null;
     }
 
+    /**
+     * From an array T, return the value of index. If not exists, return fallback.
+     */
+    public static <T> T getNth(T[] tArr, int index, T fallback) {
+        return tArr.length > index ? tArr[index] : fallback;
+    }
+
     public static <T> T first(T[] t) {
         return (t == null || t.length == 0) ? null : t[0];
     }
@@ -818,6 +825,13 @@ public class Stu {
      */
     public static <T> T mustGet(T t, T fallback) {
         return t != null ? t : fallback;
+    }
+
+    /**
+     * Alias of mustGet 
+     */
+    public static <T> T ifNull(T t, T fallback) {
+        return mustGet(t, fallback);
     }
 
     /**

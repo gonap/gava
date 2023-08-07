@@ -18,7 +18,7 @@ public class Stu {
      * EPOCH_STARTED -- record the time first library was used
      * VERBOSE_MODE  -- whether to log
      */
-    public static final String ENV_VAR_VERBOSE = "GAVA_VERBOSE";  // to avoid conflict with other program
+    public static final String ENV_VAR_VERBOSE = "VERBOSE";  // to avoid conflict with other program
     public static final long EPOCH_STARTED = System.currentTimeMillis();
     public static final boolean VERBOSE_MODE = getConfig(ENV_VAR_VERBOSE, false);
 

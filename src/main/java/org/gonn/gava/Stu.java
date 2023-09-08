@@ -885,6 +885,21 @@ public class Stu {
         return (int) ((System.nanoTime() % 100_000) / 1_000) % n;
     }
 
+    /**
+     * Generate a random key from a given string.
+     * This is not a secure random key generatpr, but for a simple test
+     * @param from eg. "1234567890"
+     * @param length eg. 5 for 5 characters long generated random string
+     * @return randomized string
+     */
+    public static String randomly(final String from, final int length) {
+        int fromLength = from.length();
+        char[] out = new char[length];
+        for (int i=0; i<length; i++) {
+            out[i] = from.charAt((int) ((System.nanoTime()+(i+length)) % fromLength));
+        }
+        return new String(out);
+    }
 
     /**
      * Get hash from the input string

@@ -49,6 +49,8 @@ public class TestResult {
     @Override
     public String toString() { return this.sb.toString(); }
 
+    public void print() { System.out.println(this); { 
+
     public static boolean test() {
         TestResult res = new TestResult();
         {

@@ -6,6 +6,8 @@
 package org.gonn.gava;
 
 
+import java.util.function.BiConsumer;
+
 /**
  * `[St]atic [U]tils` is a collection of static methods that are very frequently used.
  *
@@ -407,10 +409,7 @@ public class Stu {
      * @return Human-readable epoch time. i.g. "15:04:05.000"
      */
     public static String epochToString(final long epoch, int offsetHr, final boolean signed) {
-        if (offsetHr > 23 || offsetHr < -23) {
-            error(() -> "getEpochString(): invalid param(s)");
-            return "00:00:00.000";
-        }
+        if (offsetHr > 23 || offsetHr < -23) return null;
 
         char[] out = new char[13]; // 13 bytes total
 
@@ -632,14 +631,14 @@ public class Stu {
      * @param f    BiConsumer function, when single param such as `--disable` is given, 2nd argument for the BiConsumer
      *             will be null.
      */
-    public static void parseArgs(String[] args, Fx20<String, String> f) {
+    public static void parseArgs(String[] args, BiConsumer<String, String> f) {
         for (String a : args) {
             if (a.startsWith("--")) {
                 int idx = a.indexOf('=');
                 if (idx >= 0) { // beginning index 2 because of the prefix "--"
-                    f.run(a.substring(2, idx), a.substring(idx + 1));
+                    f.accept(a.substring(2, idx), a.substring(idx + 1));
                 } else {
-                    f.run(a.substring(2), null);
+                    f.accept(a.substring(2), null);
                 }
             }
         }
@@ -702,7 +701,6 @@ public class Stu {
             Thread.sleep(ms);
             return true;
         } catch (InterruptedException e) {
-            error(e::toString);
             Thread.currentThread().interrupt();
             return false;
         }
@@ -721,98 +719,14 @@ public class Stu {
      * if(isVerbose()) info("some info here");      // Usage 2 -- recommended when the message isn't static.
      * </code>
      *
-     * @param prefix to be added right after the timestamp.
-     * @param msg    message to print.
+     * @param msg message to print.
      */
-    public static void log(String prefix, String msg) {
-        // use print instead of println as println calls two synchronized blocks.
+    public static void log(String msg) {
         System.out.print(
-                epochToString(System.currentTimeMillis() - EPOCH_STARTED)
-                        + prefix + msg
+                "[" + epochToString(System.currentTimeMillis() - EPOCH_STARTED) + "] "
+                        + msg
                         + (last(msg) != '\n' ? '\n' : ' ') // if not ends with newline, add newline
         );
-    }
-
-    public static void debug(Fx01<String> s) {
-        if (VERBOSE_MODE) log(" DEBUG  ", s.run());
-    }
-
-    public static void info(Fx01<String> s) {
-        if (VERBOSE_MODE) log(" INFO  ", s.run());
-    }
-
-    public static void warn(Fx01<String> s) {
-        if (VERBOSE_MODE) log(" WARN  ", s.run());
-    }
-
-    public static void error(Fx01<String> s) {
-        if (VERBOSE_MODE) log(" ERROR  ", s.run());
-    }
-
-
-    // ======================================================================
-    // OTHER
-    // ======================================================================
-
-    /**
-     * Evaluate the function without a param
-     * (This is just to reduce code.)
-     *
-     * @param evalFn A lambda function returns R
-     * @param <R>    Output type
-     * @return Result from evalFn
-     */
-    public static <R> R eval(Fx01<R> evalFn) {
-        return evalFn.run();
-    }
-
-    /**
-     * Evaluate the function with a param.
-     * (This is just to reduce code.)
-     *
-     * @param t      An input value to be evaluated
-     * @param evalFn A lambda function takes T and returns R.
-     * @param <T>    Input type
-     * @param <R>    Output type
-     * @return Result from evalFn
-     */
-    public static <T, R> R eval(T t, Fx11<T, R> evalFn) {
-        return evalFn.run(t);
-    }
-
-    /**
-     * Evaluate the function with a param.
-     * (This is just to reduce code.)
-     *
-     * @param t1     First param to the lambda
-     * @param t2     Second param to the lambda
-     * @param evalFn A lambda eval function
-     * @param <T1>   Type of first param
-     * @param <T2>   Type of second param
-     * @param <R>    Type of the result.
-     * @return Result from the lambda
-     */
-    public static <T1, T2, R> R eval(T1 t1, T2 t2, Fx21<T1, T2, R> evalFn) {
-        return evalFn.run(t1, t2);
-    }
-
-    /**
-     * Evaluate a given function with a param.
-     * (This is to reduce code. This also catches exception.)
-     *
-     * @param t          An input value to be evaluated
-     * @param evalXFn    A lambda takes T and returns R, also can throw an exception.
-     * @param fallbackFn A lambda takes an exception, and returns R.
-     * @param <T>        Input type
-     * @param <R>        Output type
-     * @return Result from evalXFn if successfully ran, otherwise result from fallbackFn.
-     */
-    public static <T, R> R evalX(T t, FxThrow<T, R> evalXFn, Fx11<Exception, R> fallbackFn) {
-        try {
-            return evalXFn.run(t);
-        } catch (Exception e) {
-            return fallbackFn.run(e);
-        }
     }
 
     /**
@@ -825,52 +739,6 @@ public class Stu {
      */
     public static <T> T mustGet(T t, T fallback) {
         return t != null ? t : fallback;
-    }
-
-    /**
-     * Alias of mustGet 
-     */
-    public static <T> T ifNull(T t, T fallback) {
-        return mustGet(t, fallback);
-    }
-
-    /**
-     * If t is null, throw an exception
-     *
-     * @param t         value to exam
-     * @param exception exception to throw if t is null
-     * @param <X>       throwable type'
-     * @param <T>       input type
-     * @return t if t is not null
-     * @throws X if t is null
-     */
-    public static <X extends Throwable, T> T mustGet(T t, X exception) throws X {
-        if (t == null) throw exception;
-        return t;
-    }
-
-    /**
-     * Modify array using fx
-     *
-     * @param src source array
-     * @param fx  lambda which modifies the src
-     * @param <T> type of the array
-     */
-    public static <T> void forEachSet(T[] src, FxUnary<T> fx) {
-        for (int i = 0; i < src.length; i++) {
-            src[i] = fx.run(src[i]);
-        }
-    }
-
-    /**
-     * Evaluate each T in T[].
-     *
-     * @param src source array
-     * @param fx  lambda takes each T.
-     * @param <T> type of the array
-     */
-    public static <T> void forEach(T[] src, Fx10<T> fx) {
-        for (T t : src) fx.run(t);
     }
 
     /**
@@ -888,15 +756,16 @@ public class Stu {
     /**
      * Generate a random key from a given string.
      * This is not a secure random key generatpr, but for a simple test
-     * @param from eg. "1234567890"
+     *
+     * @param from   eg. "1234567890"
      * @param length eg. 5 for 5 characters long generated random string
      * @return randomized string
      */
     public static String randomly(final String from, final int length) {
         int fromLength = from.length();
         char[] out = new char[length];
-        for (int i=0; i<length; i++) {
-            out[i] = from.charAt((int) ((System.nanoTime()+(i+length)) % fromLength));
+        for (int i = 0; i < length; i++) {
+            out[i] = from.charAt((int) ((System.nanoTime() + (i + length)) % fromLength));
         }
         return new String(out);
     }
@@ -923,6 +792,7 @@ public class Stu {
     // ======================================================================
     public static void main(String[] args) {
         System.out.println(Stu.class.getPackage().getName() + " by Gonn <https://gonn.org>");
+        log("Hello there");
     }
 }
 

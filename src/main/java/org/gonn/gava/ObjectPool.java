@@ -1,4 +1,5 @@
 /*
+ * Gava Library
  * <https://gonn.org> [++]
  * Copyright (c) 2023 Gon Yi. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -10,6 +11,7 @@ import java.util.function.Supplier;
 
 /**
  * Object Pool -- A Quick and Dirty Pool
+ *
  * @param <T>
  */
 public class ObjectPool<T> {
@@ -29,7 +31,7 @@ public class ObjectPool<T> {
 
     public T get() {
         synchronized (this) {
-            for (int i=0; i<this.pool.length; i++) {
+            for (int i = 0; i < this.pool.length; i++) {
                 if (this.pool[i] != null) {
                     T tmp = this.pool[i];
                     this.pool[i] = null;
@@ -45,7 +47,7 @@ public class ObjectPool<T> {
     public void put(T t) {
         this.cleaner.accept(t);
         synchronized (this) {
-            for (int i=0; i<this.pool.length; i++) {
+            for (int i = 0; i < this.pool.length; i++) {
                 if (this.pool[i] == null) {
                     this.pool[i] = t;
                     return;
@@ -56,27 +58,30 @@ public class ObjectPool<T> {
     }
 
     public synchronized void clear() {
-        for (int i=0; i<this.pool.length; i++) {
+        for (int i = 0; i < this.pool.length; i++) {
             this.pool[i] = null;
         }
     }
 
     /**
-     * Returns the count of objects in the pool.  
+     * Returns the count of objects in the pool.
      * Note that this isn't accurate
      */
     public int size() {
         int count = 0;
-        for (int i=0; i<this.pool.length; i++) {
+        for (int i = 0; i < this.pool.length; i++) {
             if (this.pool[i] != null) count++;
         }
         return count;
     }
 
-    public int capacity() { return this.pool.length; }
-    public int created() { return this.objectCreated; }
-    public int thrown() { return this.objectThrown; }
-    public int reused() { return this.objectReused; }
+    public int capacity() {return this.pool.length;}
+
+    public int created() {return this.objectCreated;}
+
+    public int thrown() {return this.objectThrown;}
+
+    public int reused() {return this.objectReused;}
 }
 
 

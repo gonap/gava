@@ -6,7 +6,7 @@
 
     <groupId>org.gonn</groupId>
     <artifactId>gava</artifactId>
-    <version>0.0.23</version>
+    <version>0.1.0</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Macro-like frequently used functions/classes</description>
     <url>https://github.com/gonap/gava</url>
@@ -140,7 +140,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>org.gonn.gava.Common</mainClass>
+                            <mainClass>org.gonn.gava.Tester</mainClass>
                         </manifest>
                         <manifestEntries>
                             <Package-Title>${project.artifactId}</Package-Title>

@@ -1,4 +1,5 @@
 /*
+ * Gava Library
  * <https://gonn.org> [++]
  * Copyright (c) 2023 Gon Yi. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -17,6 +18,6 @@ public interface Nameable {
      * @return String name
      */
     default String getName() {
-        return this.getClass().getName();
+        return this.getClass().getSimpleName();
     }
 }

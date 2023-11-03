@@ -16,45 +16,37 @@ package org.gonn.gava;
  * @param <T> data type for Key
  * @param <R> data type for Record (value)
  * @author Gon Yi
- * @version 1.0.2
+ * @version 1.1.0
  */
 public interface Storable<T, R> {
     /**
      * Get a record for the key.
      *
      * @param key to the record
-     * @param <E> any exception
      * @return record IF exists OTHERWISE returns null.
-     * @throws E any exception
      */
-    <E extends Throwable> R get(T key) throws E;
+    R get(T key);
 
     /**
      * Add a record with the key. IF the key already exists, overwrite the record.
      *
      * @param key to the record.
-     * @param <E> any exception
      * @param rec to save.
      * @return true if successfully added/updated.
-     * @throws E any exception
      */
-    <E extends Throwable> boolean set(T key, R rec) throws E;
+    boolean set(T key, R rec);
 
     /**
      * Delete a record
      *
      * @param key to the record
-     * @param <E> any exception
      * @return true if a record exists and deleted, otherwise false.
-     * @throws E any exception
      */
-    <E extends Throwable> boolean delete(T key) throws E;
+    boolean delete(T key);
     
     /**
      * Close the storable
-     *
-     * @param <E> any exception
-     * @throws E any exception
+     * @return true if successsful, otherwise false.
      */    
-    <E extends Throwable> void close() throws E;
+    boolean close();
 }

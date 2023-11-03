@@ -11,7 +11,7 @@ package org.gonn.gava;
  * A class implementing Nameable will return a name using getName() method.
  * With the override, this can return object specific.
  */
-public interface Nameable {
+public interface N {
     /**
      * Return the name of object if given.
      * Otherwise, return the class name.

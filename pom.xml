@@ -6,7 +6,7 @@
 
     <groupId>org.gonn</groupId>
     <artifactId>gava</artifactId>
-    <version>0.0.23</version>
+    <version>0.0.24</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Macro-like frequently used functions/classes</description>
     <url>https://github.com/gonap/gava</url>
@@ -54,6 +54,15 @@
 
     <build>
         <plugins>
+        <plugin>
+          <groupId>org.sonatype.central</groupId>
+          <artifactId>central-publishing-maven-plugin</artifactId>
+          <version>0.6.0</version>
+          <extensions>true</extensions>
+          <configuration>
+            <publishingServerId>central</publishingServerId>
+          </configuration>
+        </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

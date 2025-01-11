@@ -61,7 +61,10 @@
           <extensions>true</extensions>
           <configuration>
             <publishingServerId>central</publishingServerId>
-          </configuration>
+             <autoPublish>true</autoPublish>
+             <waitUntil>published</waitUntil>
+         </configuration>
+
         </plugin>
 
             <plugin>

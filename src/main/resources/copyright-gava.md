@@ -5,7 +5,7 @@ Written by Gon Y. Yi.
 
 ## Copyright and Disclaimer
 
-Copyright (C) 2022 Gon Y. Yi. All rights reserved.
+Copyright (C) 2022-2025 Gon Y. Yi. All rights reserved.
 
 Unless otherwise stated, this will serve as a basic
 copyright and disclaimer for any software or artwork

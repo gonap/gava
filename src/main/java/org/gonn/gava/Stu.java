@@ -1,915 +1,425 @@
-/*
- * <https://gonn.org> [++]
- * Copyright (c) 2023 Gon Yi. All rights reserved.
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
- */
 package org.gonn.gava;
 
+import java.util.function.*;
 
 /**
- * `[St]atic [U]tils` is a collection of static methods that are very frequently used.
- *
+ * Static Utils (STU) is a collection of static methods that are frequently used.
+ * 
  * @author Gon Yi
- * @version 1.4.1
+ * @version 0.1.0
  */
 public class Stu {
-    /**
-     * Default params set when any of the method was first used.
-     * EPOCH_STARTED -- record the time first library was used
-     * VERBOSE_MODE  -- whether to log
-     */
-    public static final String ENV_VAR_VERBOSE = "VERBOSE";  // to avoid conflict with other program
-    public static final long EPOCH_STARTED = System.currentTimeMillis();
-    public static final boolean VERBOSE_MODE = getConfig(ENV_VAR_VERBOSE, false);
-
-    // Various time in milliseconds
-    public static final int SECOND = 1000;
-    public static final int MINUTE = SECOND * 60;
-    public static final int HOUR = MINUTE * 60;
-    public static final int DAY = HOUR * 24;
-
+    private static final long EPOCH_STARTED = System.currentTimeMillis();
+    public static final boolean VERBOSE_MODE = System.getProperty("VERBOSE", null) != null;
+    
+    public static final long SECOND = 1000;
+    public static final long MINUTE = SECOND * 60;
+    public static final long HOUR = MINUTE * 60;
+    public static final long DAY = HOUR * 24;
+    
     public static final String[] EMPTY_STRING_ARRAY = new String[]{};
+    public static final char[] EMPTY_CHAR_ARRAY = new char[]{};
+    public static final int[] EMPTY_INT_ARRAY = new int[]{};
+    
 
-    // Stu is a collection of static methods. Therefore, no need for constructor.
-    private Stu() {
-    }
-
-    /**
-     * Creates a subset of String array. Take a source array, index to start, and index to end.
-     * <p>
-     * E.g.
-     * <code>subset(src, 0, -3)</code> creates a subset from the beggining of array EXCEPT last 3.
-     * <code>subset(src, -3, 0)</code> creates a subset of last 3.
-     * <code>subset(src, 1, 3)</code>  creates a subset of 2nd and 3rd (idx 2 and 3) item.
-     * </p>
-     *
-     * @param src   Source String array
-     * @param start Index from
-     * @param end   Index end
-     * @return New subset of the array
-     */
+    // This is used for hex conversion
+    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+    
+    // Stu is a collection of static methods. Therefore, disable the constructor.
+    private Stu() {}
+    
     public static String[] subset(String[] src, int start, int end) {
         if (src == null) return null;
         int sz = src.length;
         int p1 = substringCalc(sz, start, false);
         int p2 = substringCalc(sz, end, true);
         if (p1 > p2) return EMPTY_STRING_ARRAY;
-        String[] out = new String[p2 - p1];
+        String[] out = new String[p2-p1];
         System.arraycopy(src, p1, out, 0, p2 - p1);
         return out;
     }
-
-
-    /**
-     * Take a char c and repeat it n times.
-     *
-     * @param c char to repeat
-     * @param n number of repeats
-     * @return String of the result
-     */
+    
     public static String repeat(char c, int n) {
-        if (n < 1) {
-            return "";
-        }
+        if (n < 1) return "";
         char[] out = new char[n];
-        for (int i = 0; i < n; i++) {
-            out[i] = c;
-        }
+        for (int i = 0; i < n; i++) out[i] = c;
         return new String(out);
     }
-
-    /**
-     * Repeat the input string for n times.
-     *
-     * @param s A string to be repeated
-     * @param n Number of repeats
-     * @return Repeated string s
-     */
+    
     public static String repeat(String s, int n) {
-        if (s == null || n < 1) {
-            return "";
-        }
+        if (s==null || n < 1) return "";
         int size = s.length();
         char[] out = new char[size * n];
-        for (int i = 0; i < n; i++) {
-            s.getChars(0, size, out, i * size);
-        }
+        for (int i = 0; i < n; i++) s.getChars(0, size, out, i * size);
         return new String(out);
     }
 
-    /**
-     * Count char c from String s, returns int of how many times char c was used.
-     *
-     * @param haystack String s to be checked for char c
-     * @param needle   char c to lookup
-     * @return number of char c found in String s
-     */
     public static int count(String haystack, char needle) {
-        if (haystack == null) {
-            return 0;
-        }
+        if (haystack == null) return 0;
         int out = 0;
         for (int i = 0; i < haystack.length(); ++i) {
-            if (haystack.charAt(i) == needle) {
-                out++;
-            }
+            if (haystack.charAt(i) == needle) out++;
         }
-        return out;
-    }
-
-    /**
-     * Count how many times the needle is in haystack.
-     *
-     * @param haystack A string to be evaluated.
-     * @param needle   A string to be found.
-     * @return Number of times the string "search" was in s.
-     */
+        return out; 
+    }    
+    
     public static int count(String haystack, String needle) {
-        if (haystack == null || haystack.length() == 0 || needle == null || needle.length() == 0
-                || needle.length() > haystack.length()) {
-            return 0;
-        }
+        if (haystack == null || haystack.isEmpty() 
+            || needle == null || needle.isEmpty() 
+            || needle.length() > haystack.length()) return 0;
         int out = 0;
         int cur = 0;
         while ((cur = haystack.indexOf(needle, cur)) > -1) {
             out++;
             cur++;
-        }
+        } 
         return out;
     }
-
-    /**
-     * How many times String key was in the String array s.
-     *
-     * @param s   String array
-     * @param key String to search from the array
-     * @return number of key in s.
-     */
-    public static int count(String[] s, String key) {
+    
+    public static <T> int count(T[] s, T key) {
         int out = 0;
-        for (String v : s) {
-            if (v != null && v.equals(key)) {
-                out++;
-            }
+        for (T v : s) {
+            if (v != null && v.equals(key)) out++;
         }
-        return out;
+        return out; 
     }
-
-    /**
-     * Right trim the string
-     *
-     * @param s Input string
-     * @return Trimmed string
-     */
-    public static String rtrim(String s) {
-        if (s == null) {
-            return null;
+    
+    public static <T> boolean contain(T[] ts, T key) {
+        for (T v : ts) {
+            if (v != null && v.equals(key)) return true;
         }
-        for (int i = s.length() - 1; i > 0; i--) {
-            if (s.charAt(i) != ' ') {
-                return s.substring(0, i + 1);
-            }
-        }
-        return "";
+        return false;
     }
-
-    /**
-     * Left trim the string
-     *
-     * @param s Input string
-     * @return Trimmed string
-     */
-    public static String ltrim(String s) {
-        if (s == null) {
-            return null;
-        }
+    
+    public static String trimLeft(String s) {
+        if (s == null) return null;
         for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) != ' ') {
-                return s.substring(i);
-            }
+            if (s.charAt(i) != ' ') return s.substring(i);
+        }
+        return "";
+    } 
+    
+    public static String trimRight(String s) {
+        if (s == null) return null;
+        for (int i = s.length() - 1; i > 0; i--) {
+            if (s.charAt(i) != ' ') return s.substring(0, i+1);
         }
         return "";
     }
-
+    
+    public static String trimString(String input) {
+        if (input == null || input.isEmpty()) return input;
+        
+        StringBuilder sb = new StringBuilder(input);
+        int n = sb.length();
+        int index = 0;
+        boolean lastWasSpace = true;
+        
+        for (int i = 0; i < n; i++) {
+            char c = sb.charAt(i);
+            if (c != ' ') {
+                sb.setCharAt(index++, c);
+                lastWasSpace = false;
+            } else if (!lastWasSpace) {
+                sb.setCharAt(index++, c);
+                lastWasSpace = true;
+            }
+        }
+        
+        if (index > 0 && sb.charAt(index - 1) == ' ') index--;
+        
+        sb.setLength(index);
+        return sb.toString();
+    }
+    
     private static int substringCalc(int size, int index, boolean indexTo) {
         int tmp = indexTo ? 1 : 0;
         int p = index < tmp ? (size + index) : index;
-        if (p < 0) {
-            return 0;
-        }
-        if (p > size) {
-            return size;
-        }
+        if (p < 0) return 0;
+        else if (p > size) return size;
         return p;
     }
-
-    /**
-     * A static alternative substring method. This method supports negative index.
-     * <p><code>
-     * String s = "hello Gon";
-     * substring(s, -3, 0);   // returns Gon
-     * substring(s, -3, -1);  // returns Go
-     * </code></p>
-     *
-     * @param s       input string
-     * @param idxFrom index of substring from
-     * @param idxTo   index of substring to; when its value is 0, it means until end of the string.
-     * @return String value
-     */
+    
     public static String substring(String s, int idxFrom, int idxTo) {
-        if (s == null) {
-            return null;
-        }
+        if (s == null) return null;
         int sz = s.length();
         int p1 = substringCalc(sz, idxFrom, false);
         int p2 = substringCalc(sz, idxTo, true);
         return p1 >= p2 ? "" : s.substring(p1, p2);
     }
-
-    /**
-     * Return the string until index idx.
-     *
-     * @param s   Input string
-     * @param idx Index of the string. This can be negative number as well.
-     * @return Subset of string
-     */
+    
     public static String substring(String s, int idx) {
         if (idx == 0) return "";
         if (idx > 0) return substring(s, 0, idx);
         return substring(s, idx, 0);
     }
-
-    /**
-     * Get a String between String prefix and String suffix from String s.
-     * <p><code>
-     * String s = "https://gonn.org/test";
-     * getStringBetween(s, "https://", "/test");  // returns gonn.org
-     * </code></p>
-     *
-     * @param s      Input string
-     * @param prefix A prefix to search
-     * @param suffix A suffix to search
-     * @return String value within prefix and suffix. If not matched, returns null.
-     */
+    
     public static String getBetween(String s, String prefix, String suffix) {
         if (!isBetween(s, prefix, suffix)) return null;
-        return s.substring(prefix.length(), s.length() - suffix.length());
+        return s.substring(prefix.length(), s.length() - suffix.length()); 
     }
-
-    /**
-     * Check if the input has the prefix AND the suffix.
-     *
-     * @param s      Input string
-     * @param prefix A prefix string
-     * @param suffix A suffix string
-     * @return true if the input has the prefix and suffix.
-     */
+    
     public static boolean isBetween(String s, String prefix, String suffix) {
         if (s.length() < prefix.length() + suffix.length()) return false;
         return s.startsWith(prefix) && s.endsWith(suffix);
     }
-
-    /**
-     * Returns index element from the String s when separated by char delim.
-     *
-     * <code>
-     * String s = "Gon|Yi|41|Conway|AR|72034";
-     * getNth(s, '|', 3); // returns Conway
-     * </code>
-     *
-     * @param s     An input string
-     * @param delim A delimiter char to separate
-     * @param index An index to search from the separated input.
-     * @return Returns the Nth String
-     */
+    
     public static String getNth(String s, char delim, int index) {
-        if (s == null) {
-            return null;
-        }
+        if (s == null) return null;
         int n = (index < 0) ? index + count(s, delim) + 1 : index; // reverse
         int end = -1;
         int idx = 0;
         int start;
-
-        for (int i = 0; i < s.length(); ++i) {
+        
+        for (int i=0; i < s.length(); ++i) {
             if (s.charAt(i) == delim) {
                 start = end + 1;
                 end = i;
-                if (idx++ == n) {
-                    return s.substring(start, i);
-                }
+                if (idx++ == n) return s.substring(start, i); 
             }
         }
         return idx == n ? s.substring(end + 1) : null;
     }
-
-    /**
-     * From an array T, return the value of index. If not exists, return fallback.
-     */
+    
     public static <T> T getNth(T[] tArr, int index, T fallback) {
         return tArr.length > index ? tArr[index] : fallback;
-    }
-
+    } 
+    
     public static <T> T first(T[] t) {
-        return (t == null || t.length == 0) ? null : t[0];
+        return (t == null || t.length == 0) ? null : t[0]; 
     }
-
-    public static char first(String s) {
-        return (s == null || s.length() == 0) ? 0 : s.charAt(0);
-    }
-
+    
     public static <T> T last(T[] t) {
         return (t == null || t.length == 0) ? null : t[t.length - 1];
     }
-
-    public static char last(String s) {
-        return (s == null || s.length() == 0) ? 0 : s.charAt(s.length() - 1);
+    
+    public static char first(String s) {
+        return (s == null || s.isEmpty()) ? 0 : s.charAt(0);
     }
-
-    /**
-     * Remove prefix from the String s
-     *
-     * @param s      Input string
-     * @param prefix A prefix string to remove
-     * @return A string without the suffix
-     */
+    
+    public static char last(String s) {
+        return (s == null || s.isEmpty()) ? 0 : s.charAt(s.length() - 1);
+    }
+    
     public static String removePrefix(String s, String prefix) {
-        if (s == null) {
-            return null;
-        }
-        if (prefix == null) {
-            return s;
-        }
+        if (s == null) return null;
+        if (prefix == null) return s;
         return s.startsWith(prefix) ? s.substring(prefix.length()) : s;
     }
-
-    /**
-     * Remove prefix from the String s
-     *
-     * @param s      Input string
-     * @param prefix A prefix char to remove
-     * @return A string without the suffix
-     */
+    
     public static String removePrefix(String s, char prefix) {
-        if (s == null) {
-            return null;
-        }
+        if (s == null) return null;
         return first(s) == prefix ? s.substring(1) : s;
     }
-
-    /**
-     * Remove the suffix from the String s
-     *
-     * @param s      Input string
-     * @param suffix A suffix string to remove
-     * @return A string without the suffix
-     */
+    
     public static String removeSuffix(String s, String suffix) {
-        if (s == null) {
-            return null;
-        }
-        if (suffix == null) {
-            return s;
-        }
+        if (s == null) return null;
+        if (suffix == null) return s;
         return s.endsWith(suffix) ? s.substring(0, s.length() - suffix.length()) : s;
     }
-
-    /**
-     * Remove the suffix from the String s
-     *
-     * @param s      Input string
-     * @param suffix A suffix char to remove
-     * @return A string without the suffix
-     */
+    
     public static String removeSuffix(String s, char suffix) {
-        if (s == null) {
-            return null;
-        }
+        if (s == null) return null;
         return last(s) == suffix ? s.substring(0, s.length() - 1) : s;
     }
-
-    /**
-     * Returns current epoch milliseconds.
-     *
-     * @return epochMillis
-     */
+    
     public static long getEpoch() {
         return System.currentTimeMillis();
     }
-
-    /**
-     * Converts epoch milliseconds to human-readable time format.
-     * Note: Date is not considered here, and returns only time part (hour, minute, second, and millisecond)
-     *
-     * @param epoch    Epoch at milliseconds level
-     * @param offsetHr Any offset in hour. (i.g. -6 for CST) If 0 is given, this will return UTC.
-     * @param signed   Whether to show +/- sign.
-     * @return Human-readable epoch time. i.g. "15:04:05.000"
-     */
+    
     public static String epochToString(final long epoch, int offsetHr, final boolean signed) {
         if (offsetHr > 23 || offsetHr < -23) {
-            error(() -> "getEpochString(): invalid param(s)");
+            log("epochToString(): invalid offsetHr param: " + offsetHr);
             return "00:00:00.000";
         }
-
-        char[] out = new char[13]; // 13 bytes total
-
-        int epochSmall = (int) ((epoch + (offsetHr * HOUR)) % DAY); // intMax: 2,147,483,647
-
-        out[0] = '+';
+        
+        char[] out = new char[13];
+        long epochSmall = ((epoch + (offsetHr * HOUR)) % DAY);
+        
         if (epoch < 0) {
-            out[0] = '-';
+            out[0]= '-';
             epochSmall = -epochSmall;
+        } else {
+            out[0] = '+';
         }
-
-        int tmp = (epochSmall % DAY) / HOUR;
+        
+        long tmp = (epochSmall % DAY) / HOUR;
         out[1] = (char) ('0' + tmp / 10);
         out[2] = (char) ('0' + tmp % 10);
         out[3] = ':';
+        
         tmp = (epochSmall % HOUR) / MINUTE;
         out[4] = (char) ('0' + tmp / 10);
         out[5] = (char) ('0' + tmp % 10);
         out[6] = ':';
+        
         tmp = (epochSmall % MINUTE) / SECOND;
         out[7] = (char) ('0' + tmp / 10);
         out[8] = (char) ('0' + tmp % 10);
         out[9] = '.';
+
         tmp = (epochSmall % SECOND);
         out[10] = (char) ('0' + (tmp / 100));
-        out[11] = (char) ('0' + (tmp / 10) % 10);
+        out[11] = (char) ('0' + ((tmp / 10) % 10));
         out[12] = (char) ('0' + (tmp % 10));
-
-        if (signed) {
-            return new String(out, 0, 13);
-        }
+        
+        if (signed) return new String(out, 0, 13);
         return new String(out, 1, 12);
     }
-
-    /**
-     * Return epoch time with offset.
-     *
-     * @param epoch    epoch time
-     * @param offsetHr UTC offset in hour (e.g. -6 for CST)
-     * @return String value
-     */
+    
     public static String epochToString(final long epoch, int offsetHr) {
         return epochToString(epoch, offsetHr, false);
     }
-
-    /**
-     * Returns UTC time from epochMillis.
-     *
-     * @param epochMillis epoch millisecond
-     * @return String format such as 15:04:05.000
-     */
-    public static String epochToString(long epochMillis) {
-        return epochToString(epochMillis, 0, epochMillis < 0);
-    }
-
-    /**
-     * Time since EPOCH_STARTED in string format
-     *
-     * @return formatted epoch since
-     */
+    
     public static String epochToString() {
-        return epochToString(System.currentTimeMillis() - EPOCH_STARTED);
-    }
-
-    /**
-     * Prints any objects in a line per item.
-     * This can be used during quick debugging.
-     *
-     * @param name Name of the group
-     * @param objs Any object(s)
-     */
+        return epochToString(System.currentTimeMillis() - EPOCH_STARTED, 0, false);
+    } 
+    
     public static void prints(String name, Object... objs) {
         String prefix = name + "[%" + getDigits(objs.length) + "d]: ";
         String fmtString = prefix + "\"%s\"\n";
         String fmtObject = prefix + "<%s>\n";
-        String fmtOther = prefix + " %s \n";
-
+        String fmtOther  = prefix + " %s \n";
+        
         for (int i = 0; i < objs.length; i++) {
-            if (objs[i] == null)
-                System.out.printf(fmtOther, i, "null");
-            else if (objs[i] instanceof String)
-                System.out.printf(fmtString, i, objs[i]);
-            else if (objs[i] instanceof Boolean) // color true/false
-                System.out.printf(fmtOther, i, objs[i]);
-            else if (objs[i] instanceof Number)
-                System.out.printf(fmtOther, i, objs[i]);
-            else {
-                System.out.printf(fmtObject, i, objs[i]);
-            }
+            if (objs[i] == null) System.out.printf(fmtOther, i, "null");
+            else if (objs[i] instanceof String) System.out.printf(fmtString, i, objs[i]);
+            else if (objs[i] instanceof Boolean) System.out.printf(fmtOther, i, objs[i]);
+            else if (objs[i] instanceof Number) System.out.printf(fmtOther, i, objs[i]);
+            else System.out.printf(fmtObject, i, objs[i]);
         }
     }
-
+    
     public static void println(Object... any) {
         System.out.print(join(", ", any) + '\n');
     }
-
+    
     public static String join(String delimiter, Object... objs) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < objs.length; i++) {
-            if (i != 0 && delimiter != null) {
-                sb.append(delimiter);
-            }
-            if (objs[i] == null) {
-                sb.append("null");
-            } else if (objs[i] instanceof String) {
-                sb.append('"').append(objs[i].toString()).append('"');
-            } else {
-                sb.append(objs[i].toString());
-            }
+            if (i != 0 && delimiter != null) sb.append(delimiter);
+            if (objs[i] == null) sb.append("null");
+            else if (objs[i] instanceof String) sb.append('"').append(objs[i].toString()).append('"');
+            else sb.append(objs[i].toString()); 
         }
         return sb.toString();
     }
-
-
-    /**
-     * Get an integer and calculate number of digits.
-     * Note that this uses long type even when int or short type is given.
-     *
-     * @param n A number to evaluate
-     * @return Number of digits in n.
-     */
-    public static int getDigits(long n) {
-        int out = n < 0 ? 2 : 1;
-        long num = n < 0 ? -n : n;
-        while ((num = num / 10) > 0) {
-            out++;
-        }
+    
+    public static int getDigits(int n) {
+        n = n < 0 ? -n : n;
+        int out = 1;
+        while ((n = n / 10) > 0) out++;
         return out;
     }
-
-    public static int getDigits(int n) {
-        return getDigits((long) n);
-    }
-
-
-    // ======================================================================
-    // SIZE
-    // ======================================================================
-
-    /**
-     * Get bytes in long, and returns human-readable format with 2 digit decimal.
-     * If the size is negative, it will have "-" (minus sign).
-     * This is the simplest and only handles from B to GB. (e.g. 1TB will be 1024GB)
-     *
-     * @param sizeInByte Size of a file or memory in bytes (B).
-     * @return Size in string with the unit such as "12.00KB" with two decimals points.
-     */
+    
+    public static int getDigits(long n) {
+        n = n < 0 ? -n : n;
+        int out = 1;
+        while ((n = n / 10) > 0) out++;
+        return out;
+    } 
+    
     public static String byteSizeToString(long sizeInByte) {
         final String sign = sizeInByte > 0 ? "" : "-";
         final long size = sizeInByte > 0 ? sizeInByte : -sizeInByte;
-
-        // BYTES
-        if (size < 1024) {
-            return sign + size + "B";
-        }
-
+        
+        if (size < 1024) return sign + size + "B";
+        
         long unit;
         String unitString;
-
-        // KB, MB, GB
-        if (size >= 1073741824) {
-            unit = 1073741824;
-            unitString = "GB";
-        } else if (size >= 1048576) {
+        
+        if (size < 1048576) {
+            unit = 1024;
+            unitString = "KB";
+        } else if (size < 1073741824) {
             unit = 1048576;
             unitString = "MB";
         } else {
-            unit = 1024;
-            unitString = "KB";
+            unit = 1073741824;
+            unitString = "GB";        
         }
-
-        int num = (int) (size / unit); // whole number
-        int decimal = (int) ((size % unit) * 100 / unit); // decimal
-
+        
+        int num = (int) (size / unit); 
+        int decimal = (int) ((size % unit) * 100 / unit);
         return sign + num + "." + (decimal / 10) + (decimal % 10) + unitString;
     }
-
-
-    // ======================================================================
-    // ENV
-    // ======================================================================
-
-    /**
-     * Check (1) system properties, and then (2) environmental variables.
-     * IF "false" is to be noticed, set fallback as "true."
-     * IF "true" is to be noticed, set fallback as "false."
-     *
-     * @param key      property/variable name
-     * @param fallback default fallback value
-     * @return boolean value
-     */
-    public static boolean getConfig(String key, boolean fallback) {
-        String res = getConfig(key);
-        if (res == null) {
-            return fallback;
-        } // if not present, return a fallback (default)
-        res = res.toUpperCase();
-        return fallback ? (!res.equals("FALSE")) : res.equals("TRUE");
-    }
-
-    public static String getConfig(String key, String fallback) {
-        String res = getConfig(key);
-        return res != null ? res : fallback;
-    }
-
-    public static String getConfig(String key) {
-        String tmp = System.getProperty(key);
-        if (tmp != null) {
-            return tmp;
-        }
-        tmp = System.getenv(key);
-        return tmp;
-    }
-
-    /**
-     * Handles args such as `--name="Gon"`
-     *
-     * @param args String[] as main args
-     * @param f    BiConsumer function, when single param such as `--disable` is given, 2nd argument for the BiConsumer
-     *             will be null.
-     */
-    public static void parseArgs(String[] args, Fx20<String, String> f) {
+    
+    public static void parseArgs(String[] args, BiConsumer<String, String> f) {
         for (String a : args) {
             if (a.startsWith("--")) {
                 int idx = a.indexOf('=');
-                if (idx >= 0) { // beginning index 2 because of the prefix "--"
-                    f.run(a.substring(2, idx), a.substring(idx + 1));
+                if (idx >= 0) {
+                    f.accept(a.substring(2, idx), a.substring(idx + 1)); 
                 } else {
-                    f.run(a.substring(2), null);
+                    f.accept(a.substring(2), null);
                 }
             }
         }
     }
-
-    /**
-     * Get a StackTraceElement of the caller to find out who called this function.
-     *
-     * @param skip how many skips required
-     * @return Caller's StackTraceElement.
-     */
+    
     public static StackTraceElement getCaller(int skip) {
-        // getCaller(0): whoever called getCaller() method.
-        // getCaller(1): whoever called a method that called getCaller() method. (1 level deeper)
-        // returns null if n is outside the range
-        skip += 2; // ignore Thread.getStackTrace and GavaTest.getCaller
+        skip += 2;
         StackTraceElement[] tmp = Thread.currentThread().getStackTrace();
-        if (tmp.length <= skip)
-            return null;
+        if (tmp.length <= skip) return null;
         return Thread.currentThread().getStackTrace()[skip];
     }
-
-    /**
-     * Returns caller information in "filename:lineNumber" format. (e.g. "Gava.java:123")
-     *
-     * @return String value file-line
-     */
-    public static String getCaller() {
-        StackTraceElement tmp = getCaller(1);
-        if (tmp != null)
-            return tmp.getFileName() + ':' + tmp.getLineNumber();
+    
+    public static String getCallerString(int skip) {
+        StackTraceElement tmp = getCaller(skip);
+        if (tmp != null) return tmp.getFileName() + ":" + tmp.getLineNumber();
         return null;
     }
-
-    /**
-     * Run lambda function Runnable r for count times.
-     *
-     * @param r     lambda to run
-     * @param count how many times to run
-     * @return duration of the run in milliseconds.
-     */
-    public static long getTimed(Runnable r, int count) {
+    
+    public static long getTimed(Runnable r) {
         long t = getEpoch();
-        for (int i = 0; i < count; i++) {
-            r.run();
-        }
+        r.run();
         return getEpoch() - t;
     }
-
-    /**
-     * Shortcut function that calls Thread.sleep() but does not require try/catch.
-     * This returns true, when sleep ended normally, otherwise false.
-     * Note that this method does not throw any exception, but will log if verbose mode.
-     *
-     * @param ms milliseconds
-     * @return true if okay, otherwise false.
-     */
-    public static boolean sleep(long ms) {
+    
+    public static void sleep(long ms) {
         try {
             Thread.sleep(ms);
-            return true;
         } catch (InterruptedException e) {
-            error(e::toString);
+            log("Thread.sleep() interrupted: " + e.toString());
             Thread.currentThread().interrupt();
-            return false;
-        }
+        } 
+    }
+    
+    public static void log(String msg) {
+        if (VERBOSE_MODE) System.out.println(epochToString() + "  " + msg);
     }
 
-
-    // ======================================================================
-    // LOGGER
-    // ======================================================================
-
-    /**
-     * Whenever static method log() is called, it will print to System.out.
-     * To control, one can use a static method isVerbose() to check if the mode is verbose
-     * <code>
-     * if(isVerbose()) log(" [DEBUG] ", "debug!");  // Usage 1 -- completely manually, not recommended.
-     * if(isVerbose()) info("some info here");      // Usage 2 -- recommended when the message isn't static.
-     * </code>
-     *
-     * @param prefix to be added right after the timestamp.
-     * @param msg    message to print.
-     */
-    public static void log(String prefix, String msg) {
-        // use print instead of println as println calls two synchronized blocks.
-        System.out.print(
-                epochToString(System.currentTimeMillis() - EPOCH_STARTED)
-                        + prefix + msg
-                        + (last(msg) != '\n' ? '\n' : ' ') // if not ends with newline, add newline
-        );
-    }
-
-    public static void debug(Fx01<String> s) {
-        if (VERBOSE_MODE) log(" DEBUG  ", s.run());
-    }
-
-    public static void info(Fx01<String> s) {
-        if (VERBOSE_MODE) log(" INFO  ", s.run());
-    }
-
-    public static void warn(Fx01<String> s) {
-        if (VERBOSE_MODE) log(" WARN  ", s.run());
-    }
-
-    public static void error(Fx01<String> s) {
-        if (VERBOSE_MODE) log(" ERROR  ", s.run());
-    }
-
-
-    // ======================================================================
-    // OTHER
-    // ======================================================================
-
-    /**
-     * Evaluate the function without a param
-     * (This is just to reduce code.)
-     *
-     * @param evalFn A lambda function returns R
-     * @param <R>    Output type
-     * @return Result from evalFn
-     */
-    public static <R> R eval(Fx01<R> evalFn) {
-        return evalFn.run();
-    }
-
-    /**
-     * Evaluate the function with a param.
-     * (This is just to reduce code.)
-     *
-     * @param t      An input value to be evaluated
-     * @param evalFn A lambda function takes T and returns R.
-     * @param <T>    Input type
-     * @param <R>    Output type
-     * @return Result from evalFn
-     */
-    public static <T, R> R eval(T t, Fx11<T, R> evalFn) {
-        return evalFn.run(t);
-    }
-
-    /**
-     * Evaluate the function with a param.
-     * (This is just to reduce code.)
-     *
-     * @param t1     First param to the lambda
-     * @param t2     Second param to the lambda
-     * @param evalFn A lambda eval function
-     * @param <T1>   Type of first param
-     * @param <T2>   Type of second param
-     * @param <R>    Type of the result.
-     * @return Result from the lambda
-     */
-    public static <T1, T2, R> R eval(T1 t1, T2 t2, Fx21<T1, T2, R> evalFn) {
-        return evalFn.run(t1, t2);
-    }
-
-    /**
-     * Evaluate a given function with a param.
-     * (This is to reduce code. This also catches exception.)
-     *
-     * @param t          An input value to be evaluated
-     * @param evalXFn    A lambda takes T and returns R, also can throw an exception.
-     * @param fallbackFn A lambda takes an exception, and returns R.
-     * @param <T>        Input type
-     * @param <R>        Output type
-     * @return Result from evalXFn if successfully ran, otherwise result from fallbackFn.
-     */
-    public static <T, R> R evalX(T t, FxThrow<T, R> evalXFn, Fx11<Exception, R> fallbackFn) {
-        try {
-            return evalXFn.run(t);
-        } catch (Exception e) {
-            return fallbackFn.run(e);
-        }
-    }
-
-    /**
-     * If t is null, return fallback value.
-     *
-     * @param t        value to exam
-     * @param fallback value to return if t is null
-     * @param <T>      output type
-     * @return t if t is not null otherwise fallback.
-     */
+    public static void log(Supplier<String> msg) {
+        if (VERBOSE_MODE) System.out.println(epochToString() + "  " + msg.get());
+    } 
+    
     public static <T> T mustGet(T t, T fallback) {
         return t != null ? t : fallback;
     }
-
-    /**
-     * Alias of mustGet 
-     */
-    public static <T> T ifNull(T t, T fallback) {
-        return mustGet(t, fallback);
-    }
-
-    /**
-     * If t is null, throw an exception
-     *
-     * @param t         value to exam
-     * @param exception exception to throw if t is null
-     * @param <X>       throwable type'
-     * @param <T>       input type
-     * @return t if t is not null
-     * @throws X if t is null
-     */
+    
     public static <X extends Throwable, T> T mustGet(T t, X exception) throws X {
         if (t == null) throw exception;
         return t;
     }
-
-    /**
-     * Modify array using fx
-     *
-     * @param src source array
-     * @param fx  lambda which modifies the src
-     * @param <T> type of the array
-     */
-    public static <T> void forEachSet(T[] src, FxUnary<T> fx) {
-        for (int i = 0; i < src.length; i++) {
-            src[i] = fx.run(src[i]);
+    
+    public static <T> T ifNull(T t, T fallback) {
+        return mustGet(t, fallback);
+    }
+    
+    public static int parseInt(String s) throws NumberFormatException {
+        if (s == null) throw new NumberFormatException("null");
+        int out = 0;
+        char x = '0';
+        for (int i = 0; i < s.length(); i++) {
+            x = s.charAt(i);
+            if (x < '0' || x > '9') throw new NumberFormatException(s);
+            out = out * 10 + (x - '0');
         }
+        return out;
     }
-
-    /**
-     * Evaluate each T in T[].
-     *
-     * @param src source array
-     * @param fx  lambda takes each T.
-     * @param <T> type of the array
-     */
-    public static <T> void forEach(T[] src, Fx10<T> fx) {
-        for (T t : src) fx.run(t);
-    }
-
-    /**
-     * Randomly picks number based on nanoTime.
-     * This cannot be trusted and this does not generate numbers with enough randomness.
-     * This is just for quick testing of picking random items.
-     *
-     * @param n Range of number. e.g. n=10, possible outcome is 0-9.
-     * @return Kind of random number.
-     */
-    public static int randomly(int n) {
-        return (int) ((System.nanoTime() % 100_000) / 1_000) % n;
-    }
-
-    /**
-     * Generate a random key from a given string.
-     * This is not a secure random key generatpr, but for a simple test
-     * @param from eg. "1234567890"
-     * @param length eg. 5 for 5 characters long generated random string
-     * @return randomized string
-     */
-    public static String randomly(final String from, final int length) {
-        int fromLength = from.length();
-        char[] out = new char[length];
-        for (int i=0; i<length; i++) {
-            out[i] = from.charAt((int) ((System.nanoTime()+(i+length)) % fromLength));
-        }
-        return new String(out);
-    }
-
-    /**
-     * Get hash from the input string
-     *
-     * @param s Input string
-     * @return Hashed integer
-     */
+    
     public static int getHash(String s) {
         if (s == null) return 0;
-
         int sLen = s.length();
         int h = 0;
         for (int i = 0; i < sLen; i++) {
@@ -917,13 +427,204 @@ public class Stu {
         }
         return h;
     }
-
-    // ======================================================================
-    // MAIN for testing
-    // ======================================================================
-    public static void main(String[] args) {
-        System.out.println(Stu.class.getPackage().getName() + " by Gonn <https://gonn.org>");
+    
+    public static int toInt(String s) throws NumberFormatException {
+        if (!isDigit(s)) throw new NumberFormatException("toInt: invalid input: " + s);
+        int out = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) >= '0' && s.charAt(i) <= '9') 
+                out = out * 10 + (s.charAt(i) - '0'); 
+        }
+        return out;
     }
-}
+    
+    public static int toInt(String s, int fallback) {
+        try {
+            return toInt(s);
+        } catch (Exception e) {
+            return fallback;
+        } 
+    }
+    
+    public static String intComma(long n) {
+        if (n == 0) return "0";
+        boolean neg = false;
+        if (n < 0) {
+            n = -n;
+            neg = true;
+        }
+        
+        int length = getDigits(n);
+        length = length + (length - 1) / 3 + (neg ? 1 : 0);
+        
+        byte[] out = new byte[length];
+        if (neg) out[0] = '0';
+        
+        int i = length - 1;
+        int j = 0;
+        while (n > 0) {
+            if (j == 3) {
+                out[i--] = ',';
+                j = 0;
+            }
+            out[i--] = (byte)('0' + n % 10);
+            n /= 10;
+            j++; 
+        }
+        return new String(out);
+    }
+    
+    public static String intPadding(int positiveNumber, int length, char padding) {
+        if (positiveNumber < 0) positiveNumber = -positiveNumber;
+        char[] out = new char[length];
+        for (int i = 0; i < length; i++) out[i] = padding;
+        for (int i = length - 1; i >= 0; i--) {
+            if (positiveNumber == 0) break;
+            out[i] = (char)('0' + positiveNumber % 10);
+            positiveNumber /= 10;
+        }
+        return new String(out);
+    }
+    
+    public static String pad(String s, int min, int max, char padding, boolean leftPadding) {
+        if (s == null) return null;
+        int sLen = s.length();
+        if (sLen >= min) return max > 0 ? s.substring(0, max) : s;
+
+        char[] out = new char[min];
+        int i = 0;
+        
+        if (leftPadding) {
+            for (; i < min - sLen; i++) out[i] = padding;
+            for (int j = 0; j < sLen; j++) out[i++] = s.charAt(j); 
+        } else {
+            for (; i < sLen; i++) out[i] = s.charAt(i);
+            for (; i < min; i++) out[i] = padding;
+        }
+        return new String(out);
+    }
+    
+    public static String padLeft(String s, int length, char padding) {
+        return pad(s, length, length, padding, true);
+    }
+    
+    public static String padRight(String s, int length, char padding) {
+        return pad(s, length, length, padding, false);
+    }
+    
+    public static boolean isDigit(String s) {
+        if (s == null || s.isEmpty()) return false;
+        char c;
+        for (int i = 0; i < s.length(); i++) {
+            c = s.charAt(i);
+            if (c < '0' || c > '9') return false;
+        }
+        return true;
+    }
+    
+    public static boolean isDigit(char c) {
+        return '0' <= c && c <= '9';
+    }
+    
+    public static boolean isAlpha(char c) {
+        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+    }
+    
+    public static <T> void interateNotNull(T[] ts, Consumer<T> fx) {
+        if (ts == null) return;
+        for (T t : ts) if (t != null) fx.accept(t);
+    }
+    
+    public static String bitsToString(long bitflag) {
+        return bitsToString(bitflag, -1, 'O', '-', true);
+    }
+    
+    public static String bitsToString(long bitflag, int size, char on, char off, boolean reverse) {
+        if (size < 0) size = 64;
+        char[] flagString = new char[size];
+        
+        if (reverse) {
+            for (int i = 0; i < size; i++) 
+                flagString[i] = (bitflag & (1 << i)) != 0 ? on : off; 
+        } else {
+            for (int i = 0; i < size; i++) 
+                flagString[size - i - 1] = (bitflag & (1 << i)) != 0 ? on : off; 
+        }
+        return new String(flagString);
+    }
+    
+    public static String bitsToString(int bitflag) {
+        return bitsToString(bitflag, -1, 'O', '-', true);
+    }
+    
+    public static String bitsToString(int bitflag, int size, char on, char off, boolean reverse) {
+        if (size < 0) size = 32;
+        char[] flagString = new char[size];
+        
+        if (reverse) {
+            for (int i = 0; i < size; i++) { 
+                flagString[i] = (bitflag & (1 << i)) != 0 ? on : off;
+            }
+        } else {
+            for (int i = 0; i < size; i++) { 
+                flagString[size - i - 1] = (bitflag & (1 << i)) != 0 ? on : off;
+            }
+        }
+        return new String(flagString);
+    }
+    
+    public static int setBits(int flag, int mask, boolean to) {
+        return to ? (flag | mask) : (flag & ~mask);
+    }
+    
+    public static boolean hasBits(int flag, int mask, boolean hasAll) {
+        return hasAll ? ((flag & mask) == mask) : ((flag & mask) != 0);
+    }
+    
+    public static <T> T chain(T t, UnaryOperator<T> fx1, UnaryOperator<T> fx2) {
+        return fx2.apply(fx1.apply(t));
+    }
+    
+    public static <T> T chain(T t, UnaryOperator<T> fx1, UnaryOperator<T> fx2, UnaryOperator<T> fx3) {
+        return fx3.apply(fx2.apply(fx1.apply(t)));
+    }
+    
+    public static <T> T chain(T t, UnaryOperator<T> fx1, UnaryOperator<T> fx2, UnaryOperator<T> fx3, UnaryOperator<T> fx4) {
+        return fx4.apply(fx3.apply(fx2.apply(fx1.apply(t))));
+    }
+    
+    public static String toHexString(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for (int i = 0; i < bytes.length; i++) {
+            int v = bytes[i] & 0xFF;
+            hexChars[i * 2] = HEX_ARRAY[v >>> 4];
+            hexChars[i * 2 + 1] = HEX_ARRAY[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+    
+    public static <T> String arrayToString(T[] ts) {
+        if (ts == null) return "null";
+        StringBuilder sb = new StringBuilder();
+        sb.append('[');
+        if (ts.length > 0) {
+            boolean isString = ts[0] instanceof String;
+            for (int i = 0; i < ts.length; i++) {
+                if (i != 0) sb.append(", ");
+                if (isString) {
+                    sb.append('"').append(ts[i]).append('"');
+                } else {
+                    sb.append(ts[i].toString());
+                }
+            }
+        }
+        sb.append(']');
+        return sb.toString();
+    }
+} 
+
+
+
+
 
 

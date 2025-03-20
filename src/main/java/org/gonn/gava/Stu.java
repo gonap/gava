@@ -9,50 +9,41 @@ import java.util.function.*;
  * @version 0.1.0
  */
 public class Stu {
-    private static final long EPOCH_STARTED = System.currentTimeMillis();
     public static final boolean VERBOSE_MODE = System.getProperty("VERBOSE", null) != null;
-    
+    public static final long EPOCH_STARTED = System.currentTimeMillis();  // this will be used for log
+
     public static final long SECOND = 1000;
     public static final long MINUTE = SECOND * 60;
     public static final long HOUR = MINUTE * 60;
     public static final long DAY = HOUR * 24;
-    
+
     public static final String[] EMPTY_STRING_ARRAY = new String[]{};
     public static final char[] EMPTY_CHAR_ARRAY = new char[]{};
     public static final int[] EMPTY_INT_ARRAY = new int[]{};
-    
 
-    // This is used for hex conversion
-    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
-    
-    // Stu is a collection of static methods. Therefore, disable the constructor.
-    private Stu() {}
-    
-    public static String[] subset(String[] src, int start, int end) {
-        if (src == null) return null;
-        int sz = src.length;
-        int p1 = substringCalc(sz, start, false);
-        int p2 = substringCalc(sz, end, true);
-        if (p1 > p2) return EMPTY_STRING_ARRAY;
-        String[] out = new String[p2-p1];
-        System.arraycopy(src, p1, out, 0, p2 - p1);
+    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray(); // This is used for hex conversion
+    private Stu() {} // Stu is a collection of static methods. Therefore, disable the constructor.
+
+    /**
+     * Subset of a T array
+     * @param src Source T array
+     * @param start start index
+     * @param end end index
+     * @param generator to create new T[] (ig. String[]::new)
+     * @return New T array
+     */
+    public static <T> T[] subset(T[] src,  int start, int end, IntFunction<T[]> generator) {
+        start = substringCalc(src.length, start, false);
+        end = substringCalc(src.length, end, true);
+        int size = end - start;
+        T[] out = generator.apply(size);
+        if(size > 0) System.arraycopy(src, start, out, 0, size);
         return out;
     }
-    
-    public static String repeat(char c, int n) {
-        if (n < 1) return "";
-        char[] out = new char[n];
-        for (int i = 0; i < n; i++) out[i] = c;
-        return new String(out);
-    }
-    
-    public static String repeat(String s, int n) {
-        if (s==null || n < 1) return "";
-        int size = s.length();
-        char[] out = new char[size * n];
-        for (int i = 0; i < n; i++) s.getChars(0, size, out, i * size);
-        return new String(out);
-    }
+
+    // ================================================================================
+    // Integer
+    // ================================================================================
 
     public static int count(String haystack, char needle) {
         if (haystack == null) return 0;
@@ -90,47 +81,7 @@ public class Stu {
         }
         return false;
     }
-    
-    public static String trimLeft(String s) {
-        if (s == null) return null;
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) != ' ') return s.substring(i);
-        }
-        return "";
-    } 
-    
-    public static String trimRight(String s) {
-        if (s == null) return null;
-        for (int i = s.length() - 1; i > 0; i--) {
-            if (s.charAt(i) != ' ') return s.substring(0, i+1);
-        }
-        return "";
-    }
-    
-    public static String trimString(String input) {
-        if (input == null || input.isEmpty()) return input;
-        
-        StringBuilder sb = new StringBuilder(input);
-        int n = sb.length();
-        int index = 0;
-        boolean lastWasSpace = true;
-        
-        for (int i = 0; i < n; i++) {
-            char c = sb.charAt(i);
-            if (c != ' ') {
-                sb.setCharAt(index++, c);
-                lastWasSpace = false;
-            } else if (!lastWasSpace) {
-                sb.setCharAt(index++, c);
-                lastWasSpace = true;
-            }
-        }
-        
-        if (index > 0 && sb.charAt(index - 1) == ' ') index--;
-        
-        sb.setLength(index);
-        return sb.toString();
-    }
+
     
     private static int substringCalc(int size, int index, boolean indexTo) {
         int tmp = indexTo ? 1 : 0;
@@ -163,7 +114,11 @@ public class Stu {
         if (s.length() < prefix.length() + suffix.length()) return false;
         return s.startsWith(prefix) && s.endsWith(suffix);
     }
-    
+
+    // ================================================================================
+    // Array
+    // ================================================================================
+
     public static String getNth(String s, char delim, int index) {
         if (s == null) return null;
         int n = (index < 0) ? index + count(s, delim) + 1 : index; // reverse
@@ -227,16 +182,16 @@ public class Stu {
         return System.currentTimeMillis();
     }
     
-    public static String epochToString(final long epoch, int offsetHr, final boolean signed) {
+    public static String epochToString(final long milliseconds, int offsetHr, final boolean signed) {
         if (offsetHr > 23 || offsetHr < -23) {
             log("epochToString(): invalid offsetHr param: " + offsetHr);
             return "00:00:00.000";
         }
         
         char[] out = new char[13];
-        long epochSmall = ((epoch + (offsetHr * HOUR)) % DAY);
+        long epochSmall = ((milliseconds + (offsetHr * HOUR)) % DAY);
         
-        if (epoch < 0) {
+        if (milliseconds < 0) {
             out[0]= '-';
             epochSmall = -epochSmall;
         } else {
@@ -267,14 +222,18 @@ public class Stu {
         return new String(out, 1, 12);
     }
     
-    public static String epochToString(final long epoch, int offsetHr) {
-        return epochToString(epoch, offsetHr, false);
+    public static String epochToString(final long milliseconds, int offsetHr) {
+        return epochToString(milliseconds, offsetHr, false);
     }
     
+    public static String epochToString(final long milliseconds) {
+        return epochToString(milliseconds, 0, false);
+    }
+
     public static String epochToString() {
         return epochToString(System.currentTimeMillis() - EPOCH_STARTED, 0, false);
-    } 
-    
+    }
+
     public static void prints(String name, Object... objs) {
         String prefix = name + "[%" + getDigits(objs.length) + "d]: ";
         String fmtString = prefix + "\"%s\"\n";
@@ -293,7 +252,7 @@ public class Stu {
     public static void println(Object... any) {
         System.out.print(join(", ", any) + '\n');
     }
-    
+
     public static String join(String delimiter, Object... objs) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < objs.length; i++) {
@@ -318,32 +277,7 @@ public class Stu {
         while ((n = n / 10) > 0) out++;
         return out;
     } 
-    
-    public static String byteSizeToString(long sizeInByte) {
-        final String sign = sizeInByte > 0 ? "" : "-";
-        final long size = sizeInByte > 0 ? sizeInByte : -sizeInByte;
-        
-        if (size < 1024) return sign + size + "B";
-        
-        long unit;
-        String unitString;
-        
-        if (size < 1048576) {
-            unit = 1024;
-            unitString = "KB";
-        } else if (size < 1073741824) {
-            unit = 1048576;
-            unitString = "MB";
-        } else {
-            unit = 1073741824;
-            unitString = "GB";        
-        }
-        
-        int num = (int) (size / unit); 
-        int decimal = (int) ((size % unit) * 100 / unit);
-        return sign + num + "." + (decimal / 10) + (decimal % 10) + unitString;
-    }
-    
+
     public static void parseArgs(String[] args, BiConsumer<String, String> f) {
         for (String a : args) {
             if (a.startsWith("--")) {
@@ -380,7 +314,7 @@ public class Stu {
         try {
             Thread.sleep(ms);
         } catch (InterruptedException e) {
-            log("Thread.sleep() interrupted: " + e.toString());
+            log("Thread.sleep() interrupted: " + e);
             Thread.currentThread().interrupt();
         } 
     }
@@ -391,7 +325,7 @@ public class Stu {
 
     public static void log(Supplier<String> msg) {
         if (VERBOSE_MODE) System.out.println(epochToString() + "  " + msg.get());
-    } 
+    }
     
     public static <T> T mustGet(T t, T fallback) {
         return t != null ? t : fallback;
@@ -417,7 +351,36 @@ public class Stu {
         }
         return out;
     }
-    
+
+    public static int parseInt(String s, int fallback) {
+        try {
+            return parseInt(s);
+        } catch (NumberFormatException ignore) {
+            return fallback;
+        }
+    }
+
+
+    public static long parseLong(String s) throws NumberFormatException {
+        if (s == null) throw new NumberFormatException("null");
+        long out = 0;
+        char x = '0';
+        for (int i = 0; i < s.length(); i++) {
+            x = s.charAt(i);
+            if (x < '0' || x > '9') throw new NumberFormatException(s);
+            out = out * 10 + (x - '0');
+        }
+        return out;
+    }
+
+    public static long parseLong(String s, long fallback) {
+        try {
+            return parseLong(s);
+        } catch (NumberFormatException ignore) {
+            return fallback;
+        }
+    }
+
     public static int getHash(String s) {
         if (s == null) return 0;
         int sLen = s.length();
@@ -427,90 +390,7 @@ public class Stu {
         }
         return h;
     }
-    
-    public static int toInt(String s) throws NumberFormatException {
-        if (!isDigit(s)) throw new NumberFormatException("toInt: invalid input: " + s);
-        int out = 0;
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) >= '0' && s.charAt(i) <= '9') 
-                out = out * 10 + (s.charAt(i) - '0'); 
-        }
-        return out;
-    }
-    
-    public static int toInt(String s, int fallback) {
-        try {
-            return toInt(s);
-        } catch (Exception e) {
-            return fallback;
-        } 
-    }
-    
-    public static String intComma(long n) {
-        if (n == 0) return "0";
-        boolean neg = false;
-        if (n < 0) {
-            n = -n;
-            neg = true;
-        }
-        
-        int length = getDigits(n);
-        length = length + (length - 1) / 3 + (neg ? 1 : 0);
-        
-        byte[] out = new byte[length];
-        if (neg) out[0] = '0';
-        
-        int i = length - 1;
-        int j = 0;
-        while (n > 0) {
-            if (j == 3) {
-                out[i--] = ',';
-                j = 0;
-            }
-            out[i--] = (byte)('0' + n % 10);
-            n /= 10;
-            j++; 
-        }
-        return new String(out);
-    }
-    
-    public static String intPadding(int positiveNumber, int length, char padding) {
-        if (positiveNumber < 0) positiveNumber = -positiveNumber;
-        char[] out = new char[length];
-        for (int i = 0; i < length; i++) out[i] = padding;
-        for (int i = length - 1; i >= 0; i--) {
-            if (positiveNumber == 0) break;
-            out[i] = (char)('0' + positiveNumber % 10);
-            positiveNumber /= 10;
-        }
-        return new String(out);
-    }
-    
-    public static String pad(String s, int min, int max, char padding, boolean leftPadding) {
-        if (s == null) return null;
-        int sLen = s.length();
-        if (sLen >= min) return max > 0 ? s.substring(0, max) : s;
 
-        char[] out = new char[min];
-        int i = 0;
-        
-        if (leftPadding) {
-            for (; i < min - sLen; i++) out[i] = padding;
-            for (int j = 0; j < sLen; j++) out[i++] = s.charAt(j); 
-        } else {
-            for (; i < sLen; i++) out[i] = s.charAt(i);
-            for (; i < min; i++) out[i] = padding;
-        }
-        return new String(out);
-    }
-    
-    public static String padLeft(String s, int length, char padding) {
-        return pad(s, length, length, padding, true);
-    }
-    
-    public static String padRight(String s, int length, char padding) {
-        return pad(s, length, length, padding, false);
-    }
     
     public static boolean isDigit(String s) {
         if (s == null || s.isEmpty()) return false;
@@ -530,11 +410,15 @@ public class Stu {
         return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
     }
     
-    public static <T> void interateNotNull(T[] ts, Consumer<T> fx) {
+    public static <T> void iterateNotNull(T[] ts, Consumer<T> fx) {
         if (ts == null) return;
         for (T t : ts) if (t != null) fx.accept(t);
     }
-    
+
+    // ================================================================================
+    // Bitwise Flag
+    // ================================================================================
+
     public static String bitsToString(long bitflag) {
         return bitsToString(bitflag, -1, 'O', '-', true);
     }
@@ -544,11 +428,11 @@ public class Stu {
         char[] flagString = new char[size];
         
         if (reverse) {
-            for (int i = 0; i < size; i++) 
-                flagString[i] = (bitflag & (1 << i)) != 0 ? on : off; 
+            for (int i = 0; i < size; i++)
+                flagString[i] = (bitflag & (1 << i)) != 0 ? on : off;
         } else {
             for (int i = 0; i < size; i++) 
-                flagString[size - i - 1] = (bitflag & (1 << i)) != 0 ? on : off; 
+                flagString[size - i - 1] = (bitflag & (1 << i)) != 0 ? on : off;
         }
         return new String(flagString);
     }
@@ -580,7 +464,11 @@ public class Stu {
     public static boolean hasBits(int flag, int mask, boolean hasAll) {
         return hasAll ? ((flag & mask) == mask) : ((flag & mask) != 0);
     }
-    
+
+    // ================================================================================
+    // Chained Functions
+    // ================================================================================
+
     public static <T> T chain(T t, UnaryOperator<T> fx1, UnaryOperator<T> fx2) {
         return fx2.apply(fx1.apply(t));
     }
@@ -592,7 +480,64 @@ public class Stu {
     public static <T> T chain(T t, UnaryOperator<T> fx1, UnaryOperator<T> fx2, UnaryOperator<T> fx3, UnaryOperator<T> fx4) {
         return fx4.apply(fx3.apply(fx2.apply(fx1.apply(t))));
     }
-    
+
+    // ================================================================================
+    // To String
+    // ================================================================================
+
+
+    /**
+     * Repeats char c for n times
+     * @param c char to repeat
+     * @param n number of repeats
+     * @return String with repeated char
+     */
+    public static String repeat(char c, int n) {
+        if (n < 1) return "";
+        char[] out = new char[n];
+        for (int i = 0; i < n; i++) out[i] = c;
+        return new String(out);
+    }
+
+    /**
+     * Repeats a string for n times
+     * @param s string to repeat
+     * @param n number of repeats
+     * @return String with repeated string s
+     */
+    public static String repeat(String s, int n) {
+        if (s==null || n < 1) return "";
+        int size = s.length();
+        char[] out = new char[size * n];
+        for (int i = 0; i < n; i++) s.getChars(0, size, out, i * size);
+        return new String(out);
+    }
+
+    public static String byteSizeToString(long sizeInByte) {
+        final String sign = sizeInByte > 0 ? "" : "-";
+        final long size = sizeInByte > 0 ? sizeInByte : -sizeInByte;
+
+        if (size < 1024) return sign + size + "B";
+
+        long unit;
+        String unitString;
+
+        if (size < 1048576) {
+            unit = 1024;
+            unitString = "KB";
+        } else if (size < 1073741824) {
+            unit = 1048576;
+            unitString = "MB";
+        } else {
+            unit = 1073741824;
+            unitString = "GB";
+        }
+
+        int num = (int) (size / unit);
+        int decimal = (int) ((size % unit) * 100 / unit);
+        return sign + num + "." + (decimal / 10) + (decimal % 10) + unitString;
+    }
+
     public static String toHexString(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for (int i = 0; i < bytes.length; i++) {
@@ -621,10 +566,112 @@ public class Stu {
         sb.append(']');
         return sb.toString();
     }
-} 
+
+    public static String intComma(long n) {
+        if (n == 0) return "0";
+        boolean neg = false;
+        if (n < 0) {
+            n = -n;
+            neg = true;
+        }
+
+        int length = getDigits(n);
+        length = length + (length - 1) / 3 + (neg ? 1 : 0);
+
+        byte[] out = new byte[length];
+        if (neg) out[0] = '0';
+
+        int i = length - 1;
+        int j = 0;
+        while (n > 0) {
+            if (j == 3) {
+                out[i--] = ',';
+                j = 0;
+            }
+            out[i--] = (byte)('0' + n % 10);
+            n /= 10;
+            j++;
+        }
+        return new String(out);
+    }
+
+    public static String intPadding(long positiveNumber, int length, char padding) {
+        if (positiveNumber < 0) positiveNumber = -positiveNumber;
+        char[] out = new char[length];
+        for (int i = 0; i < length; i++) out[i] = padding;
+        for (int i = length - 1; i >= 0; i--) {
+            if (positiveNumber == 0) break;
+            out[i] = (char)('0' + positiveNumber % 10);
+            positiveNumber /= 10;
+        }
+        return new String(out);
+    }
+
+    public static String pad(String s, int min, int max, char padding, boolean leftPadding) {
+        if (s == null) return null;
+        int sLen = s.length();
+        if (sLen >= min) return max > 0 ? s.substring(0, max) : s;
+
+        char[] out = new char[min];
+        int i = 0;
+
+        if (leftPadding) {
+            for (; i < min - sLen; i++) out[i] = padding;
+            for (int j = 0; j < sLen; j++) out[i++] = s.charAt(j);
+        } else {
+            for (; i < sLen; i++) out[i] = s.charAt(i);
+            for (; i < min; i++) out[i] = padding;
+        }
+        return new String(out);
+    }
+
+    public static String padLeft(String s, int length, char padding) {
+        return pad(s, length, length, padding, true);
+    }
+
+    public static String padRight(String s, int length, char padding) {
+        return pad(s, length, length, padding, false);
+    }
 
 
+    public static String trimLeft(String s) {
+        if (s == null) return null;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) != ' ') return s.substring(i);
+        }
+        return "";
+    }
 
+    public static String trimRight(String s) {
+        if (s == null) return null;
+        for (int i = s.length() - 1; i > 0; i--) {
+            if (s.charAt(i) != ' ') return s.substring(0, i+1);
+        }
+        return "";
+    }
 
+    public static String trimString(String input) {
+        if (input == null || input.isEmpty()) return input;
 
+        StringBuilder sb = new StringBuilder(input);
+        int n = sb.length();
+        int index = 0;
+        boolean lastWasSpace = true;
 
+        for (int i = 0; i < n; i++) {
+            char c = sb.charAt(i);
+            if (c != ' ') {
+                sb.setCharAt(index++, c);
+                lastWasSpace = false;
+            } else if (!lastWasSpace) {
+                sb.setCharAt(index++, c);
+                lastWasSpace = true;
+            }
+        }
+
+        if (index > 0 && sb.charAt(index - 1) == ' ') index--;
+
+        sb.setLength(index);
+        return sb.toString();
+    }
+}

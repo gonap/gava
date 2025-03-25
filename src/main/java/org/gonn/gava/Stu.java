@@ -6,7 +6,7 @@ import java.util.function.*;
  * Static Utils (STU) is a collection of static methods that are frequently used.
  * 
  * @author Gon Yi
- * @version 0.1.0
+ * @version 0.1.1
  */
 public class Stu {
     public static final boolean VERBOSE_MODE = System.getProperty("VERBOSE", null) != null;
@@ -409,6 +409,20 @@ public class Stu {
     public static boolean isAlpha(char c) {
         return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
     }
+
+	public static boolean isAlphaNumeric(String s) {
+		if (s == null) return false;
+		boolean hasNumber = false;
+		boolean hasAlpha = false;
+		char c;
+		for (int i = 0; i < s.length(); i++) {
+			c = s.charAt(i);
+			if (isDigit(c)) { hasNumber = true; }
+			else if (isAlpha(c)) { hasAlpha = true; }
+			else { return false; }
+		}
+		return hasAlpha && hasNumber;
+	}
     
     public static <T> void iterateNotNull(T[] ts, Consumer<T> fx) {
         if (ts == null) return;

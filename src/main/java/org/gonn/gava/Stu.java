@@ -4,7 +4,7 @@ import java.util.function.*;
 
 /**
  * Static Utils (STU) is a collection of static methods that are frequently used.
- * 
+ *
  * @author Gon Yi
  * @version 0.1.1
  */
@@ -22,22 +22,24 @@ public class Stu {
     public static final int[] EMPTY_INT_ARRAY = new int[]{};
 
     private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray(); // This is used for hex conversion
+
     private Stu() {} // Stu is a collection of static methods. Therefore, disable the constructor.
 
     /**
      * Subset of a T array
-     * @param src Source T array
-     * @param start start index
-     * @param end end index
+     *
+     * @param src       Source T array
+     * @param start     start index
+     * @param end       end index
      * @param generator to create new T[] (ig. String[]::new)
      * @return New T array
      */
-    public static <T> T[] subset(T[] src,  int start, int end, IntFunction<T[]> generator) {
+    public static <T> T[] subset(T[] src, int start, int end, IntFunction<T[]> generator) {
         start = substringCalc(src.length, start, false);
         end = substringCalc(src.length, end, true);
         int size = end - start;
         T[] out = generator.apply(size);
-        if(size > 0) System.arraycopy(src, start, out, 0, size);
+        if (size > 0) System.arraycopy(src, start, out, 0, size);
         return out;
     }
 
@@ -51,30 +53,30 @@ public class Stu {
         for (int i = 0; i < haystack.length(); ++i) {
             if (haystack.charAt(i) == needle) out++;
         }
-        return out; 
-    }    
-    
+        return out;
+    }
+
     public static int count(String haystack, String needle) {
-        if (haystack == null || haystack.isEmpty() 
-            || needle == null || needle.isEmpty() 
-            || needle.length() > haystack.length()) return 0;
+        if (haystack == null || haystack.isEmpty()
+                || needle == null || needle.isEmpty()
+                || needle.length() > haystack.length()) return 0;
         int out = 0;
         int cur = 0;
         while ((cur = haystack.indexOf(needle, cur)) > -1) {
             out++;
             cur++;
-        } 
+        }
         return out;
     }
-    
+
     public static <T> int count(T[] s, T key) {
         int out = 0;
         for (T v : s) {
             if (v != null && v.equals(key)) out++;
         }
-        return out; 
+        return out;
     }
-    
+
     public static <T> boolean contain(T[] ts, T key) {
         for (T v : ts) {
             if (v != null && v.equals(key)) return true;
@@ -82,7 +84,7 @@ public class Stu {
         return false;
     }
 
-    
+
     private static int substringCalc(int size, int index, boolean indexTo) {
         int tmp = indexTo ? 1 : 0;
         int p = index < tmp ? (size + index) : index;
@@ -90,7 +92,7 @@ public class Stu {
         else if (p > size) return size;
         return p;
     }
-    
+
     public static String substring(String s, int idxFrom, int idxTo) {
         if (s == null) return null;
         int sz = s.length();
@@ -98,18 +100,18 @@ public class Stu {
         int p2 = substringCalc(sz, idxTo, true);
         return p1 >= p2 ? "" : s.substring(p1, p2);
     }
-    
+
     public static String substring(String s, int idx) {
         if (idx == 0) return "";
         if (idx > 0) return substring(s, 0, idx);
         return substring(s, idx, 0);
     }
-    
+
     public static String getBetween(String s, String prefix, String suffix) {
         if (!isBetween(s, prefix, suffix)) return null;
-        return s.substring(prefix.length(), s.length() - suffix.length()); 
+        return s.substring(prefix.length(), s.length() - suffix.length());
     }
-    
+
     public static boolean isBetween(String s, String prefix, String suffix) {
         if (s.length() < prefix.length() + suffix.length()) return false;
         return s.startsWith(prefix) && s.endsWith(suffix);
@@ -125,89 +127,89 @@ public class Stu {
         int end = -1;
         int idx = 0;
         int start;
-        
-        for (int i=0; i < s.length(); ++i) {
+
+        for (int i = 0; i < s.length(); ++i) {
             if (s.charAt(i) == delim) {
                 start = end + 1;
                 end = i;
-                if (idx++ == n) return s.substring(start, i); 
+                if (idx++ == n) return s.substring(start, i);
             }
         }
         return idx == n ? s.substring(end + 1) : null;
     }
-    
+
     public static <T> T getNth(T[] tArr, int index, T fallback) {
         return tArr.length > index ? tArr[index] : fallback;
-    } 
-    
-    public static <T> T first(T[] t) {
-        return (t == null || t.length == 0) ? null : t[0]; 
     }
-    
+
+    public static <T> T first(T[] t) {
+        return (t == null || t.length == 0) ? null : t[0];
+    }
+
     public static <T> T last(T[] t) {
         return (t == null || t.length == 0) ? null : t[t.length - 1];
     }
-    
+
     public static char first(String s) {
         return (s == null || s.isEmpty()) ? 0 : s.charAt(0);
     }
-    
+
     public static char last(String s) {
         return (s == null || s.isEmpty()) ? 0 : s.charAt(s.length() - 1);
     }
-    
+
     public static String removePrefix(String s, String prefix) {
         if (s == null) return null;
         if (prefix == null) return s;
         return s.startsWith(prefix) ? s.substring(prefix.length()) : s;
     }
-    
+
     public static String removePrefix(String s, char prefix) {
         if (s == null) return null;
         return first(s) == prefix ? s.substring(1) : s;
     }
-    
+
     public static String removeSuffix(String s, String suffix) {
         if (s == null) return null;
         if (suffix == null) return s;
         return s.endsWith(suffix) ? s.substring(0, s.length() - suffix.length()) : s;
     }
-    
+
     public static String removeSuffix(String s, char suffix) {
         if (s == null) return null;
         return last(s) == suffix ? s.substring(0, s.length() - 1) : s;
     }
-    
+
     public static long getEpoch() {
         return System.currentTimeMillis();
     }
-    
+
     public static String epochToString(final long milliseconds, int offsetHr, final boolean signed) {
         if (offsetHr > 23 || offsetHr < -23) {
             log("epochToString(): invalid offsetHr param: " + offsetHr);
             return "00:00:00.000";
         }
-        
+
         char[] out = new char[13];
         long epochSmall = ((milliseconds + (offsetHr * HOUR)) % DAY);
-        
+
         if (milliseconds < 0) {
-            out[0]= '-';
+            out[0] = '-';
             epochSmall = -epochSmall;
         } else {
             out[0] = '+';
         }
-        
+
         long tmp = (epochSmall % DAY) / HOUR;
         out[1] = (char) ('0' + tmp / 10);
         out[2] = (char) ('0' + tmp % 10);
         out[3] = ':';
-        
+
         tmp = (epochSmall % HOUR) / MINUTE;
         out[4] = (char) ('0' + tmp / 10);
         out[5] = (char) ('0' + tmp % 10);
         out[6] = ':';
-        
+
         tmp = (epochSmall % MINUTE) / SECOND;
         out[7] = (char) ('0' + tmp / 10);
         out[8] = (char) ('0' + tmp % 10);
@@ -217,15 +219,15 @@ public class Stu {
         out[10] = (char) ('0' + (tmp / 100));
         out[11] = (char) ('0' + ((tmp / 10) % 10));
         out[12] = (char) ('0' + (tmp % 10));
-        
+
         if (signed) return new String(out, 0, 13);
         return new String(out, 1, 12);
     }
-    
+
     public static String epochToString(final long milliseconds, int offsetHr) {
         return epochToString(milliseconds, offsetHr, false);
     }
-    
+
     public static String epochToString(final long milliseconds) {
         return epochToString(milliseconds, 0, false);
     }
@@ -238,8 +240,8 @@ public class Stu {
         String prefix = name + "[%" + getDigits(objs.length) + "d]: ";
         String fmtString = prefix + "\"%s\"\n";
         String fmtObject = prefix + "<%s>\n";
-        String fmtOther  = prefix + " %s \n";
-        
+        String fmtOther = prefix + " %s \n";
+
         for (int i = 0; i < objs.length; i++) {
             if (objs[i] == null) System.out.printf(fmtOther, i, "null");
             else if (objs[i] instanceof String) System.out.printf(fmtString, i, objs[i]);
@@ -248,7 +250,7 @@ public class Stu {
             else System.out.printf(fmtObject, i, objs[i]);
         }
     }
-    
+
     public static void println(Object... any) {
         System.out.print(join(", ", any) + '\n');
     }
@@ -259,66 +261,66 @@ public class Stu {
             if (i != 0 && delimiter != null) sb.append(delimiter);
             if (objs[i] == null) sb.append("null");
             else if (objs[i] instanceof String) sb.append('"').append(objs[i].toString()).append('"');
-            else sb.append(objs[i].toString()); 
+            else sb.append(objs[i].toString());
         }
         return sb.toString();
     }
-    
+
     public static int getDigits(int n) {
         n = n < 0 ? -n : n;
         int out = 1;
         while ((n = n / 10) > 0) out++;
         return out;
     }
-    
+
     public static int getDigits(long n) {
         n = n < 0 ? -n : n;
         int out = 1;
         while ((n = n / 10) > 0) out++;
         return out;
-    } 
+    }
 
     public static void parseArgs(String[] args, BiConsumer<String, String> f) {
         for (String a : args) {
             if (a.startsWith("--")) {
                 int idx = a.indexOf('=');
                 if (idx >= 0) {
-                    f.accept(a.substring(2, idx), a.substring(idx + 1)); 
+                    f.accept(a.substring(2, idx), a.substring(idx + 1));
                 } else {
                     f.accept(a.substring(2), null);
                 }
             }
         }
     }
-    
+
     public static StackTraceElement getCaller(int skip) {
         skip += 2;
         StackTraceElement[] tmp = Thread.currentThread().getStackTrace();
         if (tmp.length <= skip) return null;
         return Thread.currentThread().getStackTrace()[skip];
     }
-    
+
     public static String getCallerString(int skip) {
         StackTraceElement tmp = getCaller(skip);
         if (tmp != null) return tmp.getFileName() + ":" + tmp.getLineNumber();
         return null;
     }
-    
+
     public static long getTimed(Runnable r) {
         long t = getEpoch();
         r.run();
         return getEpoch() - t;
     }
-    
+
     public static void sleep(long ms) {
         try {
             Thread.sleep(ms);
         } catch (InterruptedException e) {
             log("Thread.sleep() interrupted: " + e);
             Thread.currentThread().interrupt();
-        } 
+        }
     }
-    
+
     public static void log(String msg) {
         if (VERBOSE_MODE) System.out.println(epochToString() + "  " + msg);
     }
@@ -326,20 +328,20 @@ public class Stu {
     public static void log(Supplier<String> msg) {
         if (VERBOSE_MODE) System.out.println(epochToString() + "  " + msg.get());
     }
-    
+
     public static <T> T mustGet(T t, T fallback) {
         return t != null ? t : fallback;
     }
-    
+
     public static <X extends Throwable, T> T mustGet(T t, X exception) throws X {
         if (t == null) throw exception;
         return t;
     }
-    
+
     public static <T> T ifNull(T t, T fallback) {
         return mustGet(t, fallback);
     }
-    
+
     public static int parseInt(String s) throws NumberFormatException {
         if (s == null) throw new NumberFormatException("null");
         int out = 0;
@@ -391,7 +393,7 @@ public class Stu {
         return h;
     }
 
-    
+
     public static boolean isDigit(String s) {
         if (s == null || s.isEmpty()) return false;
         char c;
@@ -401,29 +403,27 @@ public class Stu {
         }
         return true;
     }
-    
+
     public static boolean isDigit(char c) {
         return '0' <= c && c <= '9';
     }
-    
+
     public static boolean isAlpha(char c) {
         return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
     }
 
-	public static boolean isAlphaNumeric(String s) {
-		if (s == null) return false;
-		boolean hasNumber = false;
-		boolean hasAlpha = false;
-		char c;
-		for (int i = 0; i < s.length(); i++) {
-			c = s.charAt(i);
-			if (isDigit(c)) { hasNumber = true; }
-			else if (isAlpha(c)) { hasAlpha = true; }
-			else { return false; }
-		}
-		return hasAlpha && hasNumber;
-	}
-    
+    public static boolean isAlphaNumeric(String s) {
+        if (s == null) return false;
+        boolean hasNumber = false;
+        boolean hasAlpha = false;
+        char c;
+        for (int i = 0; i < s.length(); i++) {
+            c = s.charAt(i);
+            if (isDigit(c)) {hasNumber = true;} else if (isAlpha(c)) {hasAlpha = true;} else {return false;}
+        }
+        return hasAlpha && hasNumber;
+    }
+
     public static <T> void iterateNotNull(T[] ts, Consumer<T> fx) {
         if (ts == null) return;
         for (T t : ts) if (t != null) fx.accept(t);
@@ -436,45 +436,45 @@ public class Stu {
     public static String bitsToString(long bitflag) {
         return bitsToString(bitflag, -1, 'O', '-', true);
     }
-    
+
     public static String bitsToString(long bitflag, int size, char on, char off, boolean reverse) {
         if (size < 0) size = 64;
         char[] flagString = new char[size];
-        
+
         if (reverse) {
             for (int i = 0; i < size; i++)
                 flagString[i] = (bitflag & (1 << i)) != 0 ? on : off;
         } else {
-            for (int i = 0; i < size; i++) 
+            for (int i = 0; i < size; i++)
                 flagString[size - i - 1] = (bitflag & (1 << i)) != 0 ? on : off;
         }
         return new String(flagString);
     }
-    
+
     public static String bitsToString(int bitflag) {
         return bitsToString(bitflag, -1, 'O', '-', true);
     }
-    
+
     public static String bitsToString(int bitflag, int size, char on, char off, boolean reverse) {
         if (size < 0) size = 32;
         char[] flagString = new char[size];
-        
+
         if (reverse) {
-            for (int i = 0; i < size; i++) { 
+            for (int i = 0; i < size; i++) {
                 flagString[i] = (bitflag & (1 << i)) != 0 ? on : off;
             }
         } else {
-            for (int i = 0; i < size; i++) { 
+            for (int i = 0; i < size; i++) {
                 flagString[size - i - 1] = (bitflag & (1 << i)) != 0 ? on : off;
             }
         }
         return new String(flagString);
     }
-    
+
     public static int setBits(int flag, int mask, boolean to) {
         return to ? (flag | mask) : (flag & ~mask);
     }
-    
+
     public static boolean hasBits(int flag, int mask, boolean hasAll) {
         return hasAll ? ((flag & mask) == mask) : ((flag & mask) != 0);
     }
@@ -486,11 +486,11 @@ public class Stu {
     public static <T> T chain(T t, UnaryOperator<T> fx1, UnaryOperator<T> fx2) {
         return fx2.apply(fx1.apply(t));
     }
-    
+
     public static <T> T chain(T t, UnaryOperator<T> fx1, UnaryOperator<T> fx2, UnaryOperator<T> fx3) {
         return fx3.apply(fx2.apply(fx1.apply(t)));
     }
-    
+
     public static <T> T chain(T t, UnaryOperator<T> fx1, UnaryOperator<T> fx2, UnaryOperator<T> fx3, UnaryOperator<T> fx4) {
         return fx4.apply(fx3.apply(fx2.apply(fx1.apply(t))));
     }
@@ -502,6 +502,7 @@ public class Stu {
 
     /**
      * Repeats char c for n times
+     *
      * @param c char to repeat
      * @param n number of repeats
      * @return String with repeated char
@@ -515,12 +516,13 @@ public class Stu {
 
     /**
      * Repeats a string for n times
+     *
      * @param s string to repeat
      * @param n number of repeats
      * @return String with repeated string s
      */
     public static String repeat(String s, int n) {
-        if (s==null || n < 1) return "";
+        if (s == null || n < 1) return "";
         int size = s.length();
         char[] out = new char[size * n];
         for (int i = 0; i < n; i++) s.getChars(0, size, out, i * size);
@@ -561,7 +563,7 @@ public class Stu {
         }
         return new String(hexChars);
     }
-    
+
     public static <T> String arrayToString(T[] ts) {
         if (ts == null) return "null";
         StringBuilder sb = new StringBuilder();
@@ -602,7 +604,7 @@ public class Stu {
                 out[i--] = ',';
                 j = 0;
             }
-            out[i--] = (byte)('0' + n % 10);
+            out[i--] = (byte) ('0' + n % 10);
             n /= 10;
             j++;
         }
@@ -615,7 +617,7 @@ public class Stu {
         for (int i = 0; i < length; i++) out[i] = padding;
         for (int i = length - 1; i >= 0; i--) {
             if (positiveNumber == 0) break;
-            out[i] = (char)('0' + positiveNumber % 10);
+            out[i] = (char) ('0' + positiveNumber % 10);
             positiveNumber /= 10;
         }
         return new String(out);
@@ -659,7 +661,7 @@ public class Stu {
     public static String trimRight(String s) {
         if (s == null) return null;
         for (int i = s.length() - 1; i > 0; i--) {
-            if (s.charAt(i) != ' ') return s.substring(0, i+1);
+            if (s.charAt(i) != ' ') return s.substring(0, i + 1);
         }
         return "";
     }

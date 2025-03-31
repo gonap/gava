@@ -15,3 +15,4 @@ Gava is a collection of simple but frequently used code.
 - `v0.0.5`: for `Box`, added `validate()` method that can throw an exception
 - `v0.0.7`: Lambda functions `FnAA` changed to `FxNN`.  
 - `v0.1.0`: Clean up and remove many non-essentials. This is not backward compatible.
+- `v0.1.1`: Added EntryPoint class

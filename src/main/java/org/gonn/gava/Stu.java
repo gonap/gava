@@ -412,7 +412,7 @@ public class Stu {
         return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
     }
 
-    public static boolean isAlphaNumeric(String s) {
+    public static boolean isAlphanumeric(String s) {
         if (s == null) return false;
         boolean hasNumber = false;
         boolean hasAlpha = false;

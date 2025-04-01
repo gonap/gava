@@ -6,7 +6,7 @@ import java.util.function.*;
  * Static Utils (STU) is a collection of static methods that are frequently used.
  *
  * @author Gon Yi
- * @version 0.1.1
+ * @version 0.1.2
  */
 public class Stu {
     public static final boolean VERBOSE_MODE = System.getProperty("VERBOSE", null) != null;
@@ -32,6 +32,7 @@ public class Stu {
      * @param start     start index
      * @param end       end index
      * @param generator to create new T[] (ig. String[]::new)
+     * @param <T>       array T
      * @return New T array
      */
     public static <T> T[] subset(T[] src, int start, int end, IntFunction<T[]> generator) {

@@ -20,7 +20,7 @@
  * </p>
  *
  * @author Gon Yi
- * @version 0.1.1
+ * @version 0.1.2
  * @see <a href="https://gonn.org">gonn.org</a>
  * @since 0.0.1
  */

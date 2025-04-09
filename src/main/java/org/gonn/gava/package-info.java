@@ -1,5 +1,5 @@
 /*
- * <https://gonn.org> [++]
+ * <https://gonn.org> (+++)
  * Copyright (c) 2022-2025 Gon Yi. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  */
@@ -7,7 +7,7 @@
 /**
  * Gava
  * <p>
- * <a href="https://gonn.org">https://gonn.org</a> [++]
+ * <a href="https://gonn.org">https://gonn.org</a> (+++)
  * </p>
  * <p>
  * Copyright (c) 2022-2025 Gon Yi. All rights reserved.<br>
@@ -20,7 +20,7 @@
  * </p>
  *
  * @author Gon Yi
- * @version 0.1.2
+ * @version 0.1.3
  * @see <a href="https://gonn.org">gonn.org</a>
  * @since 0.0.1
  */

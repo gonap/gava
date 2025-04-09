@@ -6,8 +6,7 @@
 
     <groupId>org.gonn</groupId>
     <artifactId>gava</artifactId>
-    <version>0.1.2</version>
-    <!--<version>${revision}</version>-->
+    <version>0.1.3</version>
 
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Macro-like frequently used functions/classes</description>

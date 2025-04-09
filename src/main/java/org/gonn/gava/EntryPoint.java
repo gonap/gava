@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 public class EntryPoint {
     private final Map<String, Executor> executors;
-    private BiConsumer<EntryPoint, String[]> defaultExecutor;
+
     public EntryPoint() {this.executors = new LinkedHashMap<>();}
 
     public static EntryPoint newInstance() {return new EntryPoint();}
@@ -59,7 +59,7 @@ public class EntryPoint {
         this.executors.get(args[0]).execute(Stu.subset(args, 1, 0, String[]::new));
     }
 
-    public class Executor {
+    public static class Executor {
         private final String name;
         private final Consumer<String[]> executor;
         private final String description;

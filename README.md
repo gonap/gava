@@ -17,3 +17,4 @@ Gava is a collection of simple but frequently used code.
 - `v0.1.0`: Clean up and remove many non-essentials. This is not backward compatible.
 - `v0.1.1`: Added EntryPoint class
 - `v0.1.2`: Rename Stu.isAlphaNumeric to isAlphanumeric
+- `v0.1.4`: Add Box and SimpleTerminal

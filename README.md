@@ -18,3 +18,7 @@ Gava is a collection of simple but frequently used code.
 - `v0.1.1`: Added EntryPoint class
 - `v0.1.2`: Rename Stu.isAlphaNumeric to isAlphanumeric
 - `v0.1.4`: Add Box and SimpleTerminal
+- `v0.1.5`: Bugfix on bitflagToString
+- `v0.1.6`: Bug fix on Stu.getCallerString()
+- `v0.1.7`: Added FixedLine
+

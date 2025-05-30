@@ -302,7 +302,7 @@ public class Stu {
     }
 
     public static String getCallerString(int skip) {
-        StackTraceElement tmp = getCaller(skip);
+        StackTraceElement tmp = getCaller(skip + 1);
         if (tmp != null) return tmp.getFileName() + ":" + tmp.getLineNumber();
         return null;
     }
@@ -444,10 +444,10 @@ public class Stu {
 
         if (reverse) {
             for (int i = 0; i < size; i++)
-                flagString[i] = (bitflag & (1 << i)) != 0 ? on : off;
+                flagString[i] = (bitflag & (1L << i)) != 0 ? on : off;
         } else {
             for (int i = 0; i < size; i++)
-                flagString[size - i - 1] = (bitflag & (1 << i)) != 0 ? on : off;
+                flagString[size - i - 1] = (bitflag & (1L << i)) != 0 ? on : off;
         }
         return new String(flagString);
     }

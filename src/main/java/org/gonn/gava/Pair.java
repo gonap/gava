@@ -9,15 +9,11 @@ public class Pair<T, U> {
         this.second = second;
     }
 
-    public T getFirst() {
-        return this.first;
-    }
-
-    public U getSecond() {
-        return this.second;
-    }
-
     public static <T, U> Pair<T, U> of(T first, U second) {
         return new Pair<T, U>(first, second);
     }
+
+    public T getFirst() {return this.first;}
+
+    public U getSecond() {return this.second;}
 }

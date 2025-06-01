@@ -5,13 +5,11 @@ import java.util.function.UnaryOperator;
 public class Box<T> {
     private T t;
 
-    public static <T> Box<T> of(T t) {
-        return new Box<>(t);
-    }
+    public Box(T t) {this.t = t;}
 
-    public Box(T t) { this.t = t; }
+    public static <T> Box<T> of(T t) {return new Box<>(t);}
 
-    public T get() { return this.t; } 
+    public T get() {return this.t;}
 
     public Box<T> set(T t) {
         this.t = t;
@@ -23,9 +21,9 @@ public class Box<T> {
         return this;
     }
 
-    public boolean isEmpty() { return this.t == null; }
+    public boolean isEmpty() {return this.t == null;}
 
-    public void clear() { this.t = null; }
+    public void clear() {this.t = null;}
 
     public boolean equals(Object obj) {
         if (obj == null) return false;

@@ -3,14 +3,14 @@ package org.gonn.gava;
 public class Timer {
     private long t = 0;
 
-    public Timer() { this.reset(); }
+    public Timer() {this.reset();}
 
     public Timer reset() {
         this.t = 0;
         return this;
     }
 
-    public boolean isRunning() { return this.t > 0; }
+    public boolean isRunning() {return this.t > 0;}
 
     public void start() {
         if (this.isRunning()) return;

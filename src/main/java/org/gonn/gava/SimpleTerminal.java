@@ -8,12 +8,10 @@ import java.util.function.Supplier;
 
 public class SimpleTerminal {
     public static final Supplier<String> DEFAULT_PROMPTER = () -> "> ";
-    
+    public final PrintStream output;
+    private final BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
     private Supplier<String> prompter;
     private boolean stop;
-    private final BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
-    
-    public final PrintStream output;
 
     public SimpleTerminal(PrintStream output) {
         this.prompter = DEFAULT_PROMPTER;
@@ -21,8 +19,16 @@ public class SimpleTerminal {
         this.stop = false;
     }
 
-    public SimpleTerminal() { 
+    public SimpleTerminal() {
         this(System.out);
+    }
+
+    public static SimpleTerminal newInstance(PrintStream output) {
+        return new SimpleTerminal(output);
+    }
+
+    public static SimpleTerminal newInstance() {
+        return new SimpleTerminal();
     }
 
     public SimpleTerminal setPrompt(Supplier<String> prompter) {
@@ -30,7 +36,7 @@ public class SimpleTerminal {
         return this;
     }
 
-    public SimpleTerminal setPrompt(String prompt) { return this.setPrompt(() -> prompt); }
+    public SimpleTerminal setPrompt(String prompt) {return this.setPrompt(() -> prompt);}
 
     public SimpleTerminal stop() {
         this.stop = true;
@@ -49,13 +55,5 @@ public class SimpleTerminal {
                 this.output.println("Error: " + e.getMessage());
             }
         }
-    }
-
-    public static SimpleTerminal newInstance(PrintStream output) {
-        return new SimpleTerminal(output);
-    }
-
-    public static SimpleTerminal newInstance() {
-        return new SimpleTerminal();
     }
 }

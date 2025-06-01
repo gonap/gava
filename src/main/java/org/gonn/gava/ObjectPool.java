@@ -38,7 +38,9 @@ public class ObjectPool<T> {
         }
     }
 
-    public synchronized int size() { return this.pool.size(); }
-    public synchronized int countCreated() { return this.objectCreated; }
-    public synchronized int countDiscarded() { return this.objectDiscarded; }
+    public synchronized int size() {return this.pool.size();}
+
+    public synchronized int countCreated() {return this.objectCreated;}
+
+    public synchronized int countDiscarded() {return this.objectDiscarded;}
 }

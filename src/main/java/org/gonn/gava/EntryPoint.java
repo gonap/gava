@@ -3,7 +3,6 @@ package org.gonn.gava;
 import java.io.PrintStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 

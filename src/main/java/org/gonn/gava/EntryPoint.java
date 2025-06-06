@@ -1,10 +1,15 @@
 package org.gonn.gava;
 
 import java.io.PrintStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.BiConsumer;
 
 public class EntryPoint {
     private final Map<String, Executor> executors;
@@ -81,4 +86,28 @@ public class EntryPoint {
         public String getDescription() {return this.description;}
     }
 
+    public static void loadInputStream(BiConsumer<Integer, String> loader) throws IOException {
+        loadInputStream(System.in, loader);
+    }
+
+    public static int loadInputStream(InputStreamReader isr, BiConsumer<Integer, String> loader) throws IOException {
+        try (BufferedReader br = new BufferedReader(isr)) {
+            if (isr.ready()) {
+                String line;
+                int lineNumber = 0;
+                while ((line = br.readLine()) != null) {
+                    lineNumber++;
+                    loader.accept(lineNumber, line);
+                }
+                return lineNumber;
+            }
+        }
+        return 0;
+    }
+
+    public static int loadInputStream(InputStream inputStream, BiConsumer<Integer, String> loader) throws IOException {
+        try (InputStreamReader is = new InputStreamReader(inputStream)) {
+            return loadInputStream(is, loader);
+        }
+    }
 }

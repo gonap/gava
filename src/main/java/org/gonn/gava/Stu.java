@@ -707,4 +707,13 @@ public class Stu {
         sb.setLength(index);
         return sb.toString();
     }
+
+    public static <T> void forEachKeyValue(BiConsumer<T, T> handler, T[] keyValuePairs) {
+        if (keyValuePairs == null || keyValuePairs.length == 0 || keyValuePairs.length % 2 != 0) {
+            throw new IllegalArgumentException("Key value pairs should be even number of elements");
+        }
+        for (int i = 0; i < keyValuePairs.length; i += 2) {
+            handler.accept(keyValuePairs[i], keyValuePairs[i+1]);
+        }
+    }
 }

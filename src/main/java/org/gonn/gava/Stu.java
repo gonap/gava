@@ -9,8 +9,10 @@ import java.util.function.*;
  * @version 0.1.2
  */
 public class Stu {
-    public static final boolean VERBOSE_MODE = System.getProperty("VERBOSE", null) != null;
     public static final long EPOCH_STARTED = System.currentTimeMillis();  // this will be used for log
+    public static boolean VERBOSE_MODE = System.getProperty("VERBOSE_MODE", null) != null;
+    // 0 for UTC, -5 for CDT, -6 for CST
+    public static int OFFSET_HR = Stu.parseInt(System.getProperty("OFFSET_HR",null), 0);
 
     public static final long SECOND = 1000;
     public static final long MINUTE = SECOND * 60;
@@ -230,11 +232,11 @@ public class Stu {
     }
 
     public static String epochToString(final long milliseconds) {
-        return epochToString(milliseconds, 0, false);
+        return epochToString(milliseconds, OFFSET_HR, false);
     }
 
     public static String epochToString() {
-        return epochToString(System.currentTimeMillis() - EPOCH_STARTED, 0, false);
+        return epochToString(System.currentTimeMillis(), OFFSET_HR, false);
     }
 
     public static void prints(String name, Object... objs) {
@@ -347,12 +349,17 @@ public class Stu {
         if (s == null) throw new NumberFormatException("null");
         int out = 0;
         char x = '0';
+        boolean neg = false;
         for (int i = 0; i < s.length(); i++) {
             x = s.charAt(i);
+            if (x == '-') {
+                neg = true;
+                continue;
+            }
             if (x < '0' || x > '9') throw new NumberFormatException(s);
             out = out * 10 + (x - '0');
         }
-        return out;
+        return neg ? -out : out;
     }
 
     public static int parseInt(String s, int fallback) {
@@ -394,8 +401,17 @@ public class Stu {
         return h;
     }
 
+    @Deprecated
+    public static boolean isDigit(char c) {
+        return isNumeric(c);
+    }
 
+    @Deprecated
     public static boolean isDigit(String s) {
+        return isNumeric(s);
+    }
+
+    public static boolean isNumeric(String s) {
         if (s == null || s.isEmpty()) return false;
         char c;
         for (int i = 0; i < s.length(); i++) {
@@ -405,7 +421,7 @@ public class Stu {
         return true;
     }
 
-    public static boolean isDigit(char c) {
+    public static boolean isNumeric(char c) {
         return '0' <= c && c <= '9';
     }
 
@@ -420,7 +436,7 @@ public class Stu {
         char c;
         for (int i = 0; i < s.length(); i++) {
             c = s.charAt(i);
-            if (isDigit(c)) {hasNumber = true;} else if (isAlpha(c)) {hasAlpha = true;} else {return false;}
+            if (isNumeric(c)) {hasNumber = true;} else if (isAlpha(c)) {hasAlpha = true;} else {return false;}
         }
         return hasAlpha && hasNumber;
     }

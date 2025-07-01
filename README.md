@@ -22,8 +22,5 @@ Gava is a collection of simple but frequently used code.
 - `v0.1.6`: Bug fix on Stu.getCallerString()
 - `v0.1.7`: Added FixedLine
 - `v0.1.8`: Add loadInputStream method to EntryPoint
-
-Todo for v0.1.9
-- Stu.isDigit --> isNumber
-- Box --> Wrap
+- `v0.1.9`: Stu.isDigit -> Stu.isNumeric
 

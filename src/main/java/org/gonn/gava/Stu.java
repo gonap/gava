@@ -6,7 +6,7 @@ import java.util.function.*;
  * Static Utils (STU) is a collection of static methods that are frequently used.
  *
  * @author Gon Yi
- * @version 0.1.2
+ * @version 0.1.9
  */
 public class Stu {
     public static final long EPOCH_STARTED = System.currentTimeMillis();  // this will be used for log

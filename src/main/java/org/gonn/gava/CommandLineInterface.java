@@ -6,44 +6,44 @@ import java.io.PrintStream;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-public class SimpleTerminal {
+public class CommandLineInterface {
     public static final Supplier<String> DEFAULT_PROMPTER = () -> "> ";
     public final PrintStream output;
     private final BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
     private Supplier<String> prompter;
     private boolean stop;
 
-    public SimpleTerminal(PrintStream output) {
+    public CommandLineInterface(PrintStream output) {
         this.prompter = DEFAULT_PROMPTER;
         this.output = output;
         this.stop = false;
     }
 
-    public SimpleTerminal() {
+    public CommandLineInterface() {
         this(System.out);
     }
 
-    public static SimpleTerminal newInstance(PrintStream output) {
-        return new SimpleTerminal(output);
+    public static CommandLineInterface newInstance(PrintStream output) {
+        return new CommandLineInterface(output);
     }
 
-    public static SimpleTerminal newInstance() {
-        return new SimpleTerminal();
+    public static CommandLineInterface newInstance() {
+        return new CommandLineInterface();
     }
 
-    public SimpleTerminal setPrompt(Supplier<String> prompter) {
+    public CommandLineInterface setPrompt(Supplier<String> prompter) {
         this.prompter = (prompter == null) ? DEFAULT_PROMPTER : prompter;
         return this;
     }
 
-    public SimpleTerminal setPrompt(String prompt) {return this.setPrompt(() -> prompt);}
+    public CommandLineInterface setPrompt(String prompt) {return this.setPrompt(() -> prompt);}
 
-    public SimpleTerminal stop() {
+    public CommandLineInterface stop() {
         this.stop = true;
         return this;
     }
 
-    public void execute(BiConsumer<SimpleTerminal, String> handler) {
+    public void execute(BiConsumer<CommandLineInterface, String> handler) {
         String line;
         while (!this.stop) {
             try {

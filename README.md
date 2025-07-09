@@ -24,3 +24,4 @@ Gava is a collection of simple but frequently used code.
 - `v0.1.8`:  Add loadInputStream method to EntryPoint
 - `v0.1.9`:  Stu.isDigit -> Stu.isNumeric
 - `v0.1.10`: Added Stu.forEachKeyValue()
+- `v0.1.11`: CommandLineInterface -> CommandLineParser, FixedLine -> FixedRecord

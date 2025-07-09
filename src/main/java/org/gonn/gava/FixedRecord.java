@@ -1,16 +1,16 @@
 package org.gonn.gava;
 
-public class FixedLine {
+public class FixedRecord {
     private final byte filler;
     private final byte[] line;
 
-    public FixedLine(int size, byte filler) {
+    public FixedRecord(int size, byte filler) {
         this.line = new byte[size];
         this.filler = filler;
         this.reset();
     }
 
-    public FixedLine(int size) {
+    public FixedRecord(int size) {
         this(size, (byte) ' ');
     }
 
@@ -76,13 +76,13 @@ public class FixedLine {
 
     public byte[] getBytes() {return this.line;}
 
-    public boolean copyTo(FixedLine dst) {
+    public boolean copyTo(FixedRecord dst) {
         if (dst == null || this.line.length != dst.line.length) return false;
         System.arraycopy(this.line, 0, dst.line, 0, dst.line.length);
         return true;
     }
 
-    public boolean copyFrom(FixedLine src) {
+    public boolean copyFrom(FixedRecord src) {
         if (src == null || this.line.length != src.line.length) return false;
         System.arraycopy(src.line, 0, this.line, 0, this.line.length);
         return true;

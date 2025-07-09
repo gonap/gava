@@ -6,44 +6,44 @@ import java.io.PrintStream;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-public class CommandLineInterface {
+public class CommandLineParser {
     public static final Supplier<String> DEFAULT_PROMPTER = () -> "> ";
     public final PrintStream output;
     private final BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
     private Supplier<String> prompter;
     private boolean stop;
 
-    public CommandLineInterface(PrintStream output) {
+    public CommandLineParser(PrintStream output) {
         this.prompter = DEFAULT_PROMPTER;
         this.output = output;
         this.stop = false;
     }
 
-    public CommandLineInterface() {
+    public CommandLineParser() {
         this(System.out);
     }
 
-    public static CommandLineInterface newInstance(PrintStream output) {
-        return new CommandLineInterface(output);
+    public static CommandLineParser newInstance(PrintStream output) {
+        return new CommandLineParser(output);
     }
 
-    public static CommandLineInterface newInstance() {
-        return new CommandLineInterface();
+    public static CommandLineParser newInstance() {
+        return new CommandLineParser();
     }
 
-    public CommandLineInterface setPrompt(Supplier<String> prompter) {
+    public CommandLineParser setPrompt(Supplier<String> prompter) {
         this.prompter = (prompter == null) ? DEFAULT_PROMPTER : prompter;
         return this;
     }
 
-    public CommandLineInterface setPrompt(String prompt) {return this.setPrompt(() -> prompt);}
+    public CommandLineParser setPrompt(String prompt) {return this.setPrompt(() -> prompt);}
 
-    public CommandLineInterface stop() {
+    public CommandLineParser stop() {
         this.stop = true;
         return this;
     }
 
-    public void execute(BiConsumer<CommandLineInterface, String> handler) {
+    public void execute(BiConsumer<CommandLineParser, String> handler) {
         String line;
         while (!this.stop) {
             try {

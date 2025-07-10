@@ -1,6 +1,10 @@
 package org.gonn.gava;
 
 import java.util.function.*;
+import java.io.InputStreamReader;
+import java.io.InputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
 
 /**
  * Static Utils (STU) is a collection of static methods that are frequently used.
@@ -716,4 +720,28 @@ public class Stu {
             handler.accept(keyValuePairs[i], keyValuePairs[i+1]);
         }
     }
+
+    public static int loadLines(InputStreamReader isr, BiConsumer<Integer, String> loader) throws IOException, InterruptedException {
+        try (BufferedReader br = new BufferedReader(isr)) {
+            if (!isr.ready()) Thread.sleep(500);
+            if (isr.ready()) {
+                String line;
+                int lineNumber = 0;
+                while ((line = br.readLine()) != null) {
+                    lineNumber++;
+                    loader.accept(lineNumber, line);
+                }
+                return lineNumber;
+            }
+        } 
+        return -1;
+    }
+
+    public static int loadLines(InputStream inputStream, BiConsumer<Integer, String> loader) throws IOException, InterruptedException {
+        try (InputStreamReader is = new InputStreamReader(inputStream)) {
+            return loadLines(is, loader);
+        }
+    }
+    
+
 }

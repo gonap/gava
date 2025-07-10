@@ -25,3 +25,4 @@ Gava is a collection of simple but frequently used code.
 - `v0.1.9`:  Stu.isDigit -> Stu.isNumeric
 - `v0.1.10`: Added Stu.forEachKeyValue()
 - `v0.1.11`: CommandLineInterface -> CommandLineParser, FixedLine -> FixedRecord
+- `v0.1.12`: Add Stu.loadLines()

@@ -26,3 +26,7 @@ Gava is a collection of simple but frequently used code.
 - `v0.1.10`: Added Stu.forEachKeyValue()
 - `v0.1.11`: CommandLineInterface -> CommandLineParser, FixedLine -> FixedRecord
 - `v0.1.12`: Add Stu.loadLines()
+- `v0.1.13`: EntryPoint default formatter update
+- `v0.1.14`: Add Flag64, Flag32
+- `v0.1.15`: For Flag64, Flag32, add toLong() and toInt()
+- `v0.1.16`: For Flag63, Flag32, add static method of()

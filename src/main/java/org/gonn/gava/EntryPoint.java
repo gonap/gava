@@ -13,6 +13,7 @@ import java.util.function.BiConsumer;
 
 public class EntryPoint {
     private final Map<String, Executor> executors;
+    private int maxCommandSize = 0;
 
     public EntryPoint() {this.executors = new LinkedHashMap<>();}
 
@@ -20,6 +21,9 @@ public class EntryPoint {
 
     public EntryPoint add(Executor executor) {
         if (executor == null) throw new IllegalArgumentException("executor cannot be null");
+        if (executor.getName().length() > this.maxCommandSize) {
+            this.maxCommandSize = executor.getName().length();
+        }
         this.executors.put(executor.getName(), executor);
         return this;
     }
@@ -45,7 +49,8 @@ public class EntryPoint {
 
     public void printExecutors(PrintStream ps, Function<Executor, String> formatter) {
         if (formatter == null) {
-            formatter = exec -> String.format(" - %-10s  %s", exec.getName(), exec.getDescription());
+            formatter = exec -> " - " + Stu.padRight(exec.getName(), this.maxCommandSize, ' ') +
+                "   " + exec.getDescription();
         }
         ps.println("Executors:");
         for (Executor exec : this.executors.values()) {

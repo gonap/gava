@@ -22,12 +22,6 @@ public class Flag32 {
         return Stu.bitsToString(this.flags, 32, 'O', '-', true);
     }
 
-    public static Flag32 of(int flags) {
-        Flag32 f = new Flag32();
-        f.reset(flags);
-        return f;
-    }
-
     /**
      * Get the nth flag (starts with 1)
      * @param n the flag index (starting with 1)

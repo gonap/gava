@@ -10,7 +10,7 @@ import java.io.IOException;
  * Static Utils (STU) is a collection of static methods that are frequently used.
  *
  * @author Gon Yi
- * @version 0.1.9
+ * @version 0.1.18
  */
 public class Stu {
     public static final long EPOCH_STARTED = System.currentTimeMillis();  // this will be used for log
@@ -516,6 +516,15 @@ public class Stu {
         return fx4.apply(fx3.apply(fx2.apply(fx1.apply(t))));
     }
 
+    @SafeVarargs
+    public static <T> T chain(T t, UnaryOperator<T> ...fs) {
+        T result = t;
+        for (UnaryOperator<T> f : fs) {
+            result = f.apply(result);
+        }
+        return result;
+    }
+
     // ================================================================================
     // To String
     // ================================================================================
@@ -742,6 +751,4 @@ public class Stu {
             return loadLines(is, loader);
         }
     }
-    
-
 }

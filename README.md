@@ -31,3 +31,4 @@ Gava is a collection of simple but frequently used code.
 - `v0.1.15`: For Flag64, Flag32, add toLong() and toInt()
 - `v0.1.16`: For Flag64, Flag32, add static method of()
 - `v0.1.17`: For Flag64, Flag32, remove static method of()
+- `v0.1.18`: For Stu, add chain() method

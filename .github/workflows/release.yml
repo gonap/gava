@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '1.8'
+          java-version: '8'
           server-id: central              # ← Matches your <id>central</id>
           server-username: OSSRH_USERNAME
           server-password: OSSRH_PASSWORD

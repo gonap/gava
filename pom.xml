@@ -168,8 +168,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>org.gonn.gava.Common</mainClass>
+                            <addClasspath>false</addClasspath>
                         </manifest>
                         <manifestEntries>
                             <Package-Title>${project.artifactId}</Package-Title>

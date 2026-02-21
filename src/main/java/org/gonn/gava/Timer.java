@@ -17,9 +17,22 @@ public class Timer {
         this.t = System.currentTimeMillis() + this.t;
     }
 
-    public void stop() {
+    /**
+     * Pause the time
+     */
+    public void pause() {
         long tmp = System.currentTimeMillis();
         if (this.isRunning()) this.t = -(tmp - t);
+    }
+
+    /**
+     * Stop the time and return what has been elapsed, and clear the timer.
+     * @return total time
+     */
+    public long stop() {
+        long out = this.getElapsed();
+        this.t = 0;
+        return out;
     }
 
     public long getElapsed() {
@@ -27,4 +40,5 @@ public class Timer {
         if (this.isRunning()) return tmp - t;
         return -this.t;
     }
+
 }

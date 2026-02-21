@@ -6,7 +6,7 @@
 
     <groupId>org.gonn</groupId>
     <artifactId>gava</artifactId>
-    <version>0.1.18-SNAPSHOT</version>
+    <version>0.1.19</version>
 
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Macro-like frequently used functions/classes</description>
@@ -56,31 +56,31 @@
 
     <build>
         <plugins>
-        <plugin>
-          <groupId>org.sonatype.central</groupId>
-          <artifactId>central-publishing-maven-plugin</artifactId>
-          <version>0.7.0</version>
-          <extensions>true</extensions>
-          <configuration>
-            <serverId>central</serverId>
-             <autoPublish>true</autoPublish>
-             <waitUntil>published</waitUntil>
-         </configuration>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.7.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <autoPublish>true</autoPublish>
+                    <waitUntil>published</waitUntil>
+                </configuration>
+            </plugin>
 
-        </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-release-plugin</artifactId>
-            <version>2.5.3</version>
-            <configuration>
-              <autoVersionSubmodules>true</autoVersionSubmodules>
-              <tagNameFormat>@{project.version}</tagNameFormat>
-              <pushChanges>false</pushChanges>
-              <localCheckout>true</localCheckout>
-              <remoteTagging>false</remoteTagging>
-              <arguments>-DskipTests=true</arguments>
-            </configuration>
-          </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <tagNameFormat>@{project.version}</tagNameFormat>
+                    <pushChanges>false</pushChanges>
+                    <localCheckout>true</localCheckout>
+                    <remoteTagging>false</remoteTagging>
+                    <arguments>-DskipTests=true</arguments>
+                </configuration>
+            </plugin>
 
 
             <plugin>

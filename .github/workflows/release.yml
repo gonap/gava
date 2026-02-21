@@ -18,7 +18,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '8'
-          server-id: central              # ← Matches your <id>central</id>
+          server-id: central
           server-username: OSSRH_USERNAME
           server-password: OSSRH_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
@@ -33,7 +33,7 @@ jobs:
 
 
       - name: Build and publish to Maven Central
-        run: mvn -B -P gpg,ossrh clean deploy -Dgpg.passphrase=$GPG_PASSPHRASE
+        run: mvn -B clean deploy -Dgpg.passphrase=$GPG_PASSPHRASE
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}

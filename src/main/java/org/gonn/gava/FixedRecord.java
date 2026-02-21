@@ -19,7 +19,7 @@ import java.util.function.Consumer;
  *                 "A0003PETER PAN III43",
  *         };
  *         try (InputStream in = new ByteArrayInputStream(String.join("", data).getBytes(StandardCharsets.US_ASCII))) {
- *             FixedRecord.readInputStream(in, 20, r -> {
+ *             FixedRecord.readInputStream(in, 20, r -&gt; {
  *                 System.out.printf("ID:    [%s]%n", r.get(0,5));
  *                 System.out.printf("FName: [%s]%n", r.get(5, 6));
  *                 System.out.printf("LName: [%s]%n", r.get(11, 7));

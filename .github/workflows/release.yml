@@ -19,10 +19,10 @@ jobs:
           distribution: temurin
           java-version: '8'
           server-id: central
-          server-username: OSSRH_USERNAME
-          server-password: OSSRH_PASSWORD
+          server-username: ${{ secrets.OSSRH_USERNAME }}
+          server-password: ${{ secrets.OSSRH_PASSWORD }}
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: GPG_PASSPHRASE
+          gpg-passphrase:  ${{ secrets.GPG_PASSPHRASE }}
 
 
       - name: Import GPG key
@@ -38,6 +38,4 @@ jobs:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          CENTRAL_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          CENTRAL_TOKEN: ${{ secrets.OSSRH_PASSWORD }}
 

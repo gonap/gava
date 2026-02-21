@@ -21,13 +21,12 @@ jobs:
           server-id: central
           server-username: CENTRAL_USER
           server-password: CENTRAL_PASS
-          gpg-private-key: $GPG_PRIVATE_KEY
-          gpg-passphrase: GPG_PASSPHRASE
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
         env:
           CENTRAL_USER: ${{ secrets.CENTRAL_USER }}
           CENTRAL_PASS: ${{ secrets.CENTRAL_PASS }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
       - name: Debug Central env mapping
         run: |
@@ -48,4 +47,5 @@ jobs:
         run: mvn -B clean deploy -Dgpg.passphrase=$GPG_PASSPHRASE
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-
+          CENTRAL_USER: ${{ secrets.CENTRAL_USER }}
+          CENTRAL_PASS: ${{ secrets.CENTRAL_PASS }}

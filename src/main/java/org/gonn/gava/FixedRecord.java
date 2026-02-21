@@ -1,12 +1,43 @@
 package org.gonn.gava;
 
-public class FixedRecord {
-    private final byte filler;
-    private final byte[] line;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.function.Consumer;
 
-    public FixedRecord(int size, byte filler) {
-        this.line = new byte[size];
-        this.filler = filler;
+/**
+ * This is only for US ASCII values.
+ * This is not thread-safe.
+ * <br>
+ * Example of a static method FixedRecord.readInputStream():
+ * <pre><code>
+ *         String[] data = new String[]{
+ *                 // 23456789_123456789
+ *                 "A0001GON   YI     41",
+ *                 "A0002JOHN  DOE    42",
+ *                 "A0003PETER PAN III43",
+ *         };
+ *         try (InputStream in = new ByteArrayInputStream(String.join("", data).getBytes(StandardCharsets.US_ASCII))) {
+ *             FixedRecord.readInputStream(in, 20, r -> {
+ *                 System.out.printf("ID:    [%s]%n", r.get(0,5));
+ *                 System.out.printf("FName: [%s]%n", r.get(5, 6));
+ *                 System.out.printf("LName: [%s]%n", r.get(11, 7));
+ *                 System.out.printf("Age:   [%s]%n%n", r.get(18, 2));
+ *             });
+ *         } catch (IOException e) {
+ *             // Won't happen with ByteArrayInputStream
+ *         }
+ * </code></pre>
+ */
+public class FixedRecord {
+    private final byte padByte; // default value
+    private final byte[] data;
+
+    public FixedRecord(int size, byte padByte) {
+        if (size <= 0) throw new IllegalArgumentException();
+        this.data = new byte[size];
+        this.padByte = padByte;
         this.reset();
     }
 
@@ -15,77 +46,150 @@ public class FixedRecord {
     }
 
     public void reset(int start, int end) {
-        if (this.line.length < end) end = this.line.length;
-        for (int i = start; i < end; i++) {this.line[i] = this.filler;}
+        this.checkRange(start, end - start);
+        Arrays.fill(this.data, start, end, this.padByte);
     }
 
     public void reset() {
-        this.reset(0, this.line.length);
+        this.reset(0, this.data.length);
     }
 
-    public void set(String s, int start, int length, byte filler) {
-        if (s == null) s = "";
-        int sLen = s.length();
-        if (length > this.line.length) {length = this.line.length;}
-        if (sLen > length) {sLen = length;}
-        for (int i = 0; i < sLen; i++) {this.line[i + start] = (byte) s.charAt(i);}
-        if (sLen < length) {
-            for (int i = 0; i < length; i++) {this.line[i + start] = filler;}
-        }
+    public void set(String s, int start, int length, byte padByte) {
+        if (s == null) return;
+        this.set(s.getBytes(StandardCharsets.US_ASCII), start, length, padByte);
     }
 
     public void set(String s, int start, int length) {
-        this.set(s, start, length, this.filler);
+        this.set(s, start, length, this.padByte);
     }
 
     public void set(int start, int length) {
-        this.set("", start, length, this.filler);
+        this.set("", start, length, this.padByte);
     }
 
     public void set(String line) {
-        this.set(line, 0, this.line.length, this.filler);
+        this.set(line, 0, this.data.length, this.padByte);
     }
 
-    public void set(byte[] s, int start, int length, byte filler) {
-        int sLen = s.length;
-        if (sLen > length) {sLen = length;}
-        if (sLen > 0) System.arraycopy(s, 0, this.line, start, sLen);
+    public void set(byte[] s, int start, int length, byte padByte) {
+        if (s == null || s.length == 0) return;
+        this.checkRange(start, length);
+
+        int sLen = Math.min(s.length, length);
+        if (sLen > 0) System.arraycopy(s, 0, this.data, start, sLen);
         if (sLen < length) {
-            for (int i = sLen; i < length; i++) {this.line[i + start] = filler;}
+            Arrays.fill(this.data, sLen + start, length + start, padByte);
         }
     }
 
     public void set(byte[] s, int start, int length) {
-        this.set(s, start, length, this.filler);
+        this.set(s, start, length, this.padByte);
     }
 
-    public void set(byte b, int index) {this.line[index] = b;}
+    public void set(byte b, int index) {
+        if (index < 0 || index >= this.data.length) throw new IllegalArgumentException("Invalid index");
+        this.data[index] = b;
+    }
 
-    public void set(char c, int index) {this.line[index] = (byte) c;}
+    public void set(char c, int index) {
+        this.set((byte) c, index);
+    }
 
     public String get(int start, int length) {
-        if (length == -1) {length = this.line.length - start;}
-        return new String(this.line, start, length);
+        this.checkRange(start, length);
+        return new String(this.data, start, length, StandardCharsets.US_ASCII);
     }
 
-    public char get(int start) {
-        return (char) this.line[start];
+    public byte get(int index) {
+        if (index < 0 || index >= this.data.length) throw new IllegalArgumentException("Invalid index");
+        return this.data[index];
     }
 
-    public String toString() {return new String(this.line);}
+    /**
+     * Returns a copy of current underlying byte array
+     *
+     * @return a copy of current underlying byte array
+     */
+    public byte[] getBytes() {
+        return this.data.clone();
+    }
 
-    public byte[] getBytes() {return this.line;}
-
-    public boolean copyTo(FixedRecord dst) {
-        if (dst == null || this.line.length != dst.line.length) return false;
-        System.arraycopy(this.line, 0, dst.line, 0, dst.line.length);
+    public boolean copyTo(FixedRecord target) {
+        if (target == null || this.data.length != target.data.length) return false;
+        System.arraycopy(this.data, 0, target.data, 0, target.data.length);
         return true;
     }
 
-    public boolean copyFrom(FixedRecord src) {
-        if (src == null || this.line.length != src.line.length) return false;
-        System.arraycopy(src.line, 0, this.line, 0, this.line.length);
+    public boolean copyFrom(FixedRecord source) {
+        if (source == null || this.data.length != source.data.length) return false;
+        System.arraycopy(source.data, 0, this.data, 0, this.data.length);
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return new String(this.data, StandardCharsets.US_ASCII);
+    }
+
+    private void checkRange(int start, int length) {
+        if (start < 0 || length < 0 || start + length > this.data.length)
+            throw new IllegalArgumentException("Invalid range: start=" + start + ", length=" + length);
+    }
+
+    /**
+     * Note: partial data will be ignored.
+     *
+     * @param in          inputStream
+     * @param recordWidth width per record
+     * @param consumer    how to process the fixed record
+     * @param buffer      buffer to use
+     * @return total records read
+     * @throws IOException any IO issues
+     */
+    public static int readInputStream(InputStream in, int recordWidth, Consumer<FixedRecord> consumer, byte[] buffer)
+            throws IOException {
+        if (in == null || consumer == null) throw new IllegalArgumentException("null input");
+        if (recordWidth <= 0) throw new IllegalArgumentException("recordWidth must be > 0");
+        if (buffer == null) throw new IllegalArgumentException("null buffer");
+        if (buffer.length < recordWidth) throw new IllegalArgumentException("buffer must be >= recordWidth");
+
+        FixedRecord record = new FixedRecord(recordWidth);
+        int totalRecords = 0;
+        int bufferPos = 0;
+        int bytesInBuffer = 0;
+
+        while (true) {
+            record.reset();
+            // Shift remaining partial record to front if needed for refill
+            if (bytesInBuffer - bufferPos < recordWidth && bufferPos > 0) {
+                int remaining = bytesInBuffer - bufferPos;
+                if (remaining > 0) {
+                    System.arraycopy(buffer, bufferPos, buffer, 0, remaining);
+                }
+                bufferPos = 0;
+                bytesInBuffer = remaining;
+            }
+
+            // Refill buffer if we don't have a full record
+            if (bytesInBuffer - bufferPos < recordWidth) {
+                int bytesRead = in.read(buffer, bytesInBuffer, buffer.length - bytesInBuffer);
+                if (bytesRead == -1) break;  // EOF
+                bytesInBuffer += bytesRead;
+                if (bytesInBuffer - bufferPos < recordWidth) break;  // EOF with partial record
+            }
+
+            // Process full record
+            System.arraycopy(buffer, bufferPos, record.data, 0, recordWidth);
+            consumer.accept(record);
+            bufferPos += recordWidth;
+            totalRecords++;
+        }
+        return totalRecords;
+    }
+
+    public static int readInputStream(InputStream in, int recordWidth, Consumer<FixedRecord> consumer)
+            throws IOException {
+        return readInputStream(in, recordWidth, consumer, new byte[recordWidth]);
     }
 }
 

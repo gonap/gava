@@ -29,16 +29,16 @@ public class Box<T> {
     public void clear() {this.t = null;}
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Box<?> other)) return false;
-        if (this.t == null) return other.t == null;
-        return this.t.equals(other.t);
+    public int hashCode() {
+        return this.t == null ? 0 : this.t.hashCode();
     }
 
     @Override
-    public int hashCode() {
-        return this.t == null ? 0 : this.t.hashCode();
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Box)) return false;
+        Box<?> other = (Box<?>) obj;
+        return java.util.Objects.equals(this.t, other.t);
     }
 
     @Override

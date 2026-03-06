@@ -16,7 +16,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 /**
- * TerminalLineReader
+ * TerminalLineParser
  * <p>
  * An enhanced command-line reader for Linux/macOS that supports:
  * <ul>
@@ -39,7 +39,7 @@ import java.util.function.Supplier;
  *
  * @author Gon Yi
  */
-public class TerminalLineReader {
+public class TerminalLineParser {
 
     // -----------------------------------------------------------------------
     // Constants / ANSI helpers
@@ -78,7 +78,7 @@ public class TerminalLineReader {
      * @param output stream to print the prompt and echoed text
      * @param input  raw byte stream to read keystrokes from (typically {@link System#in})
      */
-    public TerminalLineReader(PrintStream output, InputStream input) {
+    public TerminalLineParser(PrintStream output, InputStream input) {
         this.output = output;
         this.input = input;
         this.prompter = DEFAULT_PROMPTER;
@@ -86,18 +86,18 @@ public class TerminalLineReader {
     }
 
     /** Creates a new instance that writes to {@link System#out} and reads from {@link System#in}. */
-    public TerminalLineReader() {
+    public TerminalLineParser() {
         this(System.out, System.in);
     }
 
     /** Factory method – equivalent to {@code new TerminalLineReader()}. */
-    public static TerminalLineReader newInstance() {
-        return new TerminalLineReader();
+    public static TerminalLineParser newInstance() {
+        return new TerminalLineParser();
     }
 
     /** Factory method with explicit streams. */
-    public static TerminalLineReader newInstance(PrintStream output, InputStream input) {
-        return new TerminalLineReader(output, input);
+    public static TerminalLineParser newInstance(PrintStream output, InputStream input) {
+        return new TerminalLineParser(output, input);
     }
 
     // -----------------------------------------------------------------------
@@ -105,18 +105,18 @@ public class TerminalLineReader {
     // -----------------------------------------------------------------------
 
     /** Sets the prompt supplier. Passing {@code null} restores the default. */
-    public TerminalLineReader setPrompt(Supplier<String> prompter) {
+    public TerminalLineParser setPrompt(Supplier<String> prompter) {
         this.prompter = (prompter == null) ? DEFAULT_PROMPTER : prompter;
         return this;
     }
 
     /** Sets a static prompt string. */
-    public TerminalLineReader setPrompt(String prompt) {
+    public TerminalLineParser setPrompt(String prompt) {
         return setPrompt(() -> prompt);
     }
 
     /** Sets the maximum number of history entries (default: 500). */
-    public TerminalLineReader setMaxHistory(int max) {
+    public TerminalLineParser setMaxHistory(int max) {
         this.maxHistory = (max > 0) ? max : 1;
         return this;
     }
@@ -134,7 +134,7 @@ public class TerminalLineReader {
      * Signals the read loop to stop after the current line is processed.
      * This method is safe to call from within the {@code handler} callback.
      */
-    public TerminalLineReader stop() {
+    public TerminalLineParser stop() {
         this.stop = true;
         return this;
     }
@@ -160,7 +160,7 @@ public class TerminalLineReader {
      *
      * @param handler callback invoked with (this, line) for every non-empty line
      */
-    public void execute(BiConsumer<TerminalLineReader, String> handler) {
+    public void execute(BiConsumer<TerminalLineParser, String> handler) {
         String savedStty = saveStty();
         boolean isTty = !savedStty.isEmpty();
 
@@ -197,7 +197,7 @@ public class TerminalLineReader {
      * The host environment (IDE console, pipe) already handles echo and line
      * editing, so we just read complete lines and dispatch them.
      */
-    private void cookedLoop(BiConsumer<TerminalLineReader, String> handler) {
+    private void cookedLoop(BiConsumer<TerminalLineParser, String> handler) {
         BufferedReader br = new BufferedReader(new InputStreamReader(input));
         printPrompt();
         while (!this.stop) {
@@ -222,7 +222,7 @@ public class TerminalLineReader {
     // Internal – read loop
     // -----------------------------------------------------------------------
 
-    private void readLoop(BiConsumer<TerminalLineReader, String> handler) {
+    private void readLoop(BiConsumer<TerminalLineParser, String> handler) {
         // Mutable line buffer (using StringBuilder for the actual text)
         StringBuilder line = new StringBuilder();
         // Cursor position within line (0 = before first char)

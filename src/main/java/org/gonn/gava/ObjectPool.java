@@ -1,46 +1,82 @@
 package org.gonn.gava;
 
 import java.util.Deque;
-import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ObjectPool<T> {
     private final Deque<T> pool;
     private final Supplier<T> objectFactory;
-    private final Consumer<T> initializer;
+    private final Consumer<T> resetter;
+    private final Consumer<T> destroyer;
     private final int poolSize;
-    private int objectCreated = 0;
-    private int objectDiscarded = 0;
+    private final AtomicInteger objectCreated;
+    private final AtomicInteger objectRejected;
+    private final AtomicInteger currentPoolSize;
 
-    public ObjectPool(Supplier<T> objectFactory, Consumer<T> initializer, int poolSize) {
-        this.pool = new LinkedList<>();
+    public ObjectPool(Supplier<T> objectFactory, Consumer<T> resetter, Consumer<T> destroyer, int poolSize) {
+        if (objectFactory == null || resetter == null || destroyer == null) {
+            throw new IllegalArgumentException("objectFactory, resetter, and destroyer cannot be null");
+        }
+        if (poolSize < 1) {
+            throw new IllegalArgumentException("poolSize must be positive");
+        }
+
+        this.pool = new ConcurrentLinkedDeque<>();
         this.objectFactory = objectFactory;
-        this.initializer = initializer;
+        this.resetter = resetter;
+        this.destroyer = destroyer;
         this.poolSize = poolSize;
+        this.objectCreated = new AtomicInteger(0);
+        this.objectRejected = new AtomicInteger(0);
+        this.currentPoolSize = new AtomicInteger(0);
     }
 
-    public synchronized T get() {
-        if (this.pool.isEmpty()) {
-            this.objectCreated++;
+    public T get() {
+        T obj = this.pool.poll(); // returns null if empty, no exception
+        if (obj == null) {
+            this.objectCreated.incrementAndGet();
             return this.objectFactory.get();
         }
-        return this.pool.pop();
+        this.currentPoolSize.decrementAndGet();
+        return obj;
     }
 
-    public synchronized void release(T object) {
-        if (object == null) return;
-        if (this.pool.size() < this.poolSize) {
-            this.initializer.accept(object);
+    public void put(T object) {
+        if (object == null) {
+            throw new IllegalArgumentException("Cannot put null into pool");
+        }
+
+        final int size = currentPoolSize.get();
+        this.resetter.accept(object);
+
+        if (size < this.poolSize && this.currentPoolSize.compareAndSet(size, size + 1)) {
             this.pool.push(object);
         } else {
-            this.objectDiscarded++;
+            this.objectRejected.incrementAndGet();
+            this.destroyer.accept(object);
         }
     }
 
-    public synchronized int size() {return this.pool.size();}
+    public int size() {
+        return this.currentPoolSize.get();  // More reliable than pool.size()
+    }
 
-    public synchronized int countCreated() {return this.objectCreated;}
+    public int countCreated() {
+        return this.objectCreated.get();
+    }
 
-    public synchronized int countDiscarded() {return this.objectDiscarded;}
+    public int countRejected() {
+        return this.objectRejected.get();
+    }
+
+    public void clear() {
+        T obj;
+        while ((obj = this.pool.poll()) != null) {
+            this.currentPoolSize.decrementAndGet();
+            this.destroyer.accept(obj);
+        }
+    }
 }
